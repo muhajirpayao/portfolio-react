@@ -1,7 +1,10 @@
 import react from '../assets/react.svg';
-import { Mail, Github, MapPin, Phone, Twitter, Facebook } from "lucide-react";
+import hero from '../assets/hero.jpg';
+import html from '../assets/html.png';
+import { Mail, Github, MapPin, Phone, Twitter, Facebook  } from "lucide-react";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
+
 
 const Home = () => {
     const [isScrolled, setIsScrolled] = useState(false);
@@ -19,30 +22,36 @@ const Home = () => {
 
             {/* Navbar */}
             <header
-                className={`fixed top-0 z-50 w-full px-10 flex items-center justify-between h-16 backdrop-blur-md transition-all duration-500 ${isScrolled ? "bg-black/70 shadow-md" : "bg-transparent"
-                    }`}
-            >
-                <h1 className="text-white font-bold text-2xl tracking-wide">
-                    KrazyDev.
-                </h1>
-          
-                <nav>
-                    <ul className="flex space-x-10 text-white cursor-pointer">
-                        <li className="hover:text-yellow-400 transition-colors duration-300">
-                            <a href="#home">Home</a>
-                        </li>
-                        <li className="hover:text-yellow-400 transition-colors duration-300">
-                            <a href="#about">About</a>
-                        </li>
-                        <li className="hover:text-yellow-400 transition-colors duration-300">
-                            <a href="#projects">Projects</a>
-                        </li>
-                        <li className="hover:text-yellow-400 transition-colors duration-300">
-                            <a href="#contact">Contact</a>
-                        </li>
-                    </ul>
-                </nav>
-            </header>
+  className={`fixed top-0 z-50 w-full px-6 md:px-10 flex items-center justify-between h-16 backdrop-blur-md transition-all duration-500 ${
+    isScrolled ? "bg-black/70 shadow-md" : "bg-transparent"
+  }`}
+>
+  {/* Logo */}
+  <h1 className="text-white font-bold text-xl sm:text-2xl tracking-wide">
+    KrazyDev.
+  </h1>
+
+  {/* Desktop Navigation (hidden on mobile) */}
+  <nav className="hidden md:flex">
+    <ul className="flex space-x-10 text-white cursor-pointer font-medium">
+      <li className="hover:text-yellow-400 transition-colors duration-300">
+        <a href="#home">Home</a>
+      </li>
+
+      <li className="hover:text-yellow-400 transition-colors duration-300">
+        <a href="#about">About</a>
+      </li>
+
+      <li className="hover:text-yellow-400 transition-colors duration-300">
+        <a href="#projects">Projects</a>
+      </li>
+
+      <li className="hover:text-yellow-400 transition-colors duration-300">
+        <a href="#contact">Contact</a>
+      </li>
+    </ul>
+  </nav>
+</header>
 
             {/* Hero Section */}
             <motion.section
@@ -59,7 +68,7 @@ const Home = () => {
                     className="w-48 h-48 rounded-full overflow-hidden shadow-lg border-4 border-yellow-500"
                 >
                     <img
-                        src="/src/assets/hero.jpg"
+                        src={hero}
                         alt="hero"
                         className="w-full h-full object-cover hover:scale-110 transition-transform duration-500"
                     />
@@ -72,11 +81,12 @@ const Home = () => {
                     className="mt-6"
                 >
                     <p className="text-gray-300 tracking-widest">Hello I'm</p>
-                    <h1 className="text-5xl font-extrabold text-yellow-400 mt-4 mb-3">
-                        Muhajir Payao
-                    </h1>
+ <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-extrabold text-yellow-400 mt-4 mb-3">
+  Muhajir Payao
+</h1>
+
                     <h3 className="text-gray-400 text-lg mb-4">
-                        Web Developer | Full Stack Developer
+                        Web Developer | Fullstack Developer
                     </h3>
 
                     {/* Location and Phone Info */}
