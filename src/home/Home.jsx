@@ -460,6 +460,14 @@ export default function Home() {
       background-clip: text;
       animation: shimmer 3s linear infinite;
     }
+    .desc-clickable {
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    .desc-clickable:active p {
+      opacity: 0.7;
+    }
   `;
 
   const sectionLabel = { fontSize:"0.65rem", fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.14em", textTransform:"uppercase", color: T.accL, marginBottom:"0.75rem" };
@@ -957,30 +965,32 @@ export default function Home() {
                       <h3 style={{ fontSize:"0.98rem", fontWeight:800, letterSpacing:"-0.02em", marginBottom:"0.18rem", color:T.text }}>{proj.title}</h3>
                       <p style={{ fontSize:"0.65rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted, letterSpacing:"0.05em", marginBottom:"0.6rem" }}>{proj.subtitle}</p>
 
-                      {/* ── DESCRIPTION WITH SEE MORE ── */}
-                      <p style={{
-                        fontSize:"0.82rem", color:T.sub, lineHeight:1.65,
-                        display: isExpanded ? "block" : "-webkit-box",
-                        WebkitLineClamp: isExpanded ? "unset" : 3,
-                        WebkitBoxOrient: "vertical",
-                        overflow: "hidden",
-                      }}>
-                        {proj.desc}
-                      </p>
-                      <button
+                      {/* ── CLICKABLE DESCRIPTION — tap anywhere on text to expand/collapse ── */}
+                      <div
+                        className="desc-clickable"
                         onClick={(e) => toggleDesc(proj.id, e)}
-                        style={{
-                          background: "none", border: "none", cursor: "pointer",
-                          padding: "4px 0 0", marginTop: "2px",
-                          fontSize: "0.68rem", fontFamily: "'JetBrains Mono', monospace",
-                          color: proj.accent, display: "inline-flex", alignItems: "center", gap: "0.25rem",
-                          transition: "opacity 0.2s",
-                        }}
-                        onMouseEnter={e => e.currentTarget.style.opacity = "0.7"}
-                        onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                        style={{ position: "relative" }}
                       >
-                        {isExpanded ? "See less ↑" : "See more ↓"}
-                      </button>
+                        <p style={{
+                          fontSize:"0.82rem", color:T.sub, lineHeight:1.65,
+                          display: isExpanded ? "block" : "-webkit-box",
+                          WebkitLineClamp: isExpanded ? "unset" : 3,
+                          WebkitBoxOrient: "vertical",
+                          overflow: "hidden",
+                          transition: "all 0.25s ease",
+                        }}>
+                          {proj.desc}
+                        </p>
+                        {!isExpanded && (
+                          <div style={{
+                            position:"absolute", bottom:0, left:0, right:0, height:24,
+                            background: dark
+                              ? "linear-gradient(to bottom, transparent, #030a0a)"
+                              : "linear-gradient(to bottom, transparent, #f0fafa)",
+                            pointerEvents:"none",
+                          }} />
+                        )}
+                      </div>
                     </div>
 
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem", marginTop:"auto" }}>
