@@ -9,7 +9,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
-
+//testing
 /* ─────────────── DATA ─────────────────────── */
 const NAV_ITEMS = [
   { label: "Home",       icon: "🏠" },
