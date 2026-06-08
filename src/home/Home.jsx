@@ -3,74 +3,235 @@ import {
   Mail, Github, MapPin, Phone, Twitter, Facebook,
   ArrowUpRight, Moon, Sun, Menu, X,
   Box, ShoppingCart, Gamepad2, Globe, Folder, BarChart3,
-  ChevronRight, Code2, Layers, Zap
+  ChevronRight, Code2, Layers, Zap, Users, ChevronLeft,
+  ExternalLink, Briefcase, Calendar
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
 
 /* ─────────────── DATA ─────────────────────── */
 const NAV_ITEMS = [
-  { label: "Home",     icon: "🏠" },
-  { label: "About",    icon: "👤" },
-  { label: "Projects", icon: "💼" },
-  { label: "Skills",   icon: "⚡" },
-  { label: "Contact",  icon: "✉️"  },
+  { label: "Home",       icon: "🏠" },
+  { label: "About",      icon: "👤" },
+  { label: "Experience", icon: "💼" },
+  { label: "Projects",   icon: "🗂️" },
+  { label: "Skills",     icon: "⚡" },
+  { label: "Contact",    icon: "✉️"  },
+];
+
+/* ── EXPERIENCE ── */
+const EXPERIENCE = [
+  {
+    id: "01",
+    company: "KMC Solutions",
+    role: "Software Developer",
+    type: "Full-time",
+    range: "August 2025 – March 2026",
+    desc: "Developed and extended the core features of KMC Visitor Management System using the T3 Stack. Built scalable full-stack features across TypeScript, Next.js, TRPC, TailwindCSS and integrated Prisma ORM with PostgreSQL for robust data handling.",
+    stack: ["TypeScript", "Next.js", "TRPC", "TailwindCSS", "Prisma"],
+    accent: "#2dd4bf",
+    logo: "🏢",
+  },
+  {
+    id: "02",
+    company: "Alorica",
+    role: "Mobile App Developer",
+    type: "Full-time",
+    range: "March 2024 – December 2024",
+    desc: "Maintained a strong CSAT rating and collaborated cross-functionally to improve service workflows. Alongside the support role, developed and maintained internal mobile applications to streamline team operations and reporting.",
+    stack: ["CRM Tools", "Zendesk", "Flutter", "Mobile Dev", "Communication"],
+    accent: "#34d399",
+    logo: "🏢",s
+  },
+];
+
+/* ── PROJECTS ── */
+const VMS_IMAGES = [
+  {
+    src: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
+    caption: "Visitor check-in dashboard — real-time visitor queue management and desk assignment flow.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&q=80",
+    caption: "Host notification system — automated alerts via email and SMS when visitors arrive.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80",
+    caption: "Admin panel — visitor logs, access control, and analytics built with TRPC + Prisma.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
+    caption: "Analytics view — visit trends, peak hours, and floor-level occupancy reporting.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
+    caption: "Mobile-responsive kiosk mode — self-service check-in for walk-in visitors.",
+  },
+];
+
+const AMOREBELLA_IMAGES = [
+  {
+    src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
+    caption: "Client intake module — managing funeral service requests and family information.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80",
+    caption: "Booking & scheduling system — calendar-driven service slot management for staff.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=800&q=80",
+    caption: "Mobile view — Flutter cross-platform UI accessible on Android and iOS devices.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80",
+    caption: "Records management — centralized archive of service history and client documents.",
+  },
+];
+
+const ZHARM_IMAGES = [
+  {
+    src: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80",
+    caption: "File dashboard — organized folder tree with quick access to recently uploaded files.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80",
+    caption: "Google Drive integration — seamlessly extending storage capacity through the Drive API.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80",
+    caption: "Upload & preview panel — drag-and-drop file uploading with instant inline preview.",
+  },
+];
+
+const POS_IMAGES = [
+  {
+    src: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
+    caption: "POS checkout screen — fast transaction processing with product search and cart management.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&q=80",
+    caption: "Inventory management — real-time stock tracking with low-stock alerts and restock logs.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80",
+    caption: "Sales reports — daily, weekly, and monthly transaction summaries with visual charts.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1573167243872-43c6433b9d40?w=800&q=80",
+    caption: "Barcode scanner integration — camera and hardware scanner support for quick product lookup.",
+  },
+];
+
+const SCATTER_IMAGES = [
+  {
+    src: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80",
+    caption: "Virtual economy hub — the main interface where users manage their in-game currency and assets.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80",
+    caption: "Progression loop — earn, spend, and level up mechanics driving player engagement.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
+    caption: "Transaction ledger — full history of currency exchanges and economy events per user.",
+  },
+];
+
+const MOTOPARTS_IMAGES = [
+  {
+    src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+    caption: "Homepage — full landing page with featured motorcycle parts and promotional banners.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=800&q=80",
+    caption: "Product catalog — filterable parts listing with pricing, stock status, and descriptions.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&q=80",
+    caption: "Product detail page — individual part view with specs, images, and add-to-cart flow.",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?w=800&q=80",
+    caption: "Admin panel — PHP-powered backend for managing inventory, orders, and customer records.",
+  },
 ];
 
 const PROJECTS = [
   {
-    id: "01", title: "Zharm Vault", subtitle: "Cloud File Management",
+    id: "01", title: "KMC Visitor Management", subtitle: "T3 Stack · Enterprise App",
+    desc: "Developed and extended the core features of KMC Visitor Management System using T3 Stack (TypeScript, TailwindCSS, TRPC, and Next.js). Built robust visitor workflows, host notifications, and real-time dashboards.",
+    stack: ["TypeScript", "Next.js", "TRPC", "TailwindCSS", "Prisma"],
+    icon: Users, accent: "#2dd4bf",
+    link: "https://visitor-management.kmc.solutions/",
+    featured: true,
+    images: VMS_IMAGES,
+  },
+  {
+    id: "02", title: "Zharm Vault", subtitle: "Cloud File Management",
     desc: "A modern cloud-based platform to securely store, organize, and access files across devices. Integrates Google Drive API for extended capacity with a fast, structured interface.",
     stack: ["React (Vite)", "Supabase", "Google Drive API"],
-    icon: Box, accent: "#2dd4bf", link: "#", featured: true,
+    icon: Box, accent: "#5eead4", link: "#", featured: true, images: ZHARM_IMAGES,
   },
   {
-    id: "02", title: "Inventory & POS", subtitle: "Management System",
+    id: "03", title: "Inventory & POS", subtitle: "Management System",
     desc: "Scalable point-of-sale platform for retail ops. Real-time product management, order processing, and transaction tracking with camera-based barcode scanning and voice input.",
     stack: ["React", "Firebase", "Supabase", "JavaScript"],
-    icon: ShoppingCart, accent: "#34d399", link: "#", featured: true,
+    icon: ShoppingCart, accent: "#34d399", link: "#", featured: true, images: POS_IMAGES,
   },
   {
-    id: "03", title: "Scatter", subtitle: "Gamified Virtual Economy",
-    desc: "A browser-based system simulating a virtual Money system. Users earn, manage, and interact with in-game currency in a structured progression loop.",
+    id: "04", title: "Scatter", subtitle: "Gamified Virtual Economy",
+    desc: "A browser-based system simulating a virtual money system. Users earn, manage, and interact with in-game currency in a structured progression loop.",
     stack: ["JavaScript", "HTML", "CSS"],
-    icon: Gamepad2, accent: "#22d3ee", link: "#", featured: true,
+    icon: Gamepad2, accent: "#22d3ee", link: "#", featured: true, images: SCATTER_IMAGES,
   },
   {
-    id: "04", title: "Portfolio Website", subtitle: "Personal Web Presence",
+    id: "05", title: "Portfolio Website", subtitle: "Personal Web Presence",
     desc: "Responsive personal website with smooth animations and a clean editorial design system built entirely in React.",
     stack: ["React", "Tailwind CSS", "Framer Motion"],
-    icon: Globe, accent: "#5eead4", link: "#", featured: false,
+    icon: Globe, accent: "#99f6e4", link: "#", featured: false, images: [],
   },
   {
-    id: "05", title: "Funeral Management", subtitle: "Cross-platform Web App",
-    desc: "Full-featured platform for managing funeral service client requests, bookings, and scheduling via Flutter and Firebase.",
+    id: "06", title: "Amorebella Funeral Homes MIS", subtitle: "Thesis Project · Cross-platform App",
+    desc: "Capstone thesis project — a full-featured Management Information System for Amorebella Funeral Homes. Handles client requests, service bookings, scheduling, and records management across web and mobile via Flutter and Firebase.",
     stack: ["Flutter", "Dart", "Firebase"],
-    icon: Folder, accent: "#99f6e4", link: "#", featured: false,
+    icon: Folder, accent: "#2dd4bf", link: "#", featured: true, images: AMOREBELLA_IMAGES,
   },
   {
-    id: "06", title: "E-Commerce Dashboard", subtitle: "Admin Panel",
-    desc: "Admin dashboard for managing inventory, users, and orders with real-time data visualization and role-based access.",
-    stack: ["React", "Firebase", "CSS"],
-    icon: BarChart3, accent: "#2dd4bf", link: "#", featured: false,
+    id: "07", title: "Store POS System", subtitle: "School Project · Desktop App",
+    desc: "Developed during school — a desktop Point-of-Sale system for managing store inventory, product records, sales transactions, and reporting. Built with C# and MS SQL Server for robust local data management.",
+    stack: ["C#", "MS SQL Server", ".NET"],
+    icon: ShoppingCart, accent: "#a78bfa", link: "#", featured: false, images: [],
+  },
+  {
+    id: "08", title: "Moto Parts PH", subtitle: "Motorcycle Parts E-Commerce Website",
+    desc: "Full e-commerce website for a motorcycle parts business — complete with product catalog, part detail pages, shopping cart, order management, and a PHP-powered admin panel for inventory and customer records.",
+    stack: ["HTML", "CSS", "PHP", "MySQL"],
+    icon: BarChart3, accent: "#fb923c", link: "#", featured: false, images: MOTOPARTS_IMAGES,
   },
 ];
 
+/* ── SKILLS (icon-based, no images needed) ── */
 const SKILLS = [
-  { label: "React",      img: "react.svg"       },
-  { label: "JavaScript", img: "javascript.png"  },
-  { label: "Flutter",    img: "flutter.jpg"     },
-  { label: "Tailwind",   img: "tailwind.png"    },
-  { label: "Firebase",   img: "fireabase.jpg"   },
-  { label: "C#",         img: "sharp.png"       },
-  { label: "HTML",       img: "html.png"        },
-  { label: "CSS",        img: "css.png"         },
+  { label: "React",       icon: "⚛️",  color: "#61dafb" },
+  { label: "TypeScript",  icon: "𝗧𝗦",  color: "#3178c6", mono: true },
+  { label: "JavaScript",  icon: "𝗝𝗦",  color: "#f7df1e", mono: true },
+  { label: "Next.js",     icon: "▲",   color: "#e8fffe" },
+  { label: "Flutter",     icon: "🐦",  color: "#54c5f8" },
+  { label: "Tailwind",    icon: "🌊",  color: "#38bdf8" },
+  { label: "Firebase",    icon: "🔥",  color: "#ffca28" },
+  { label: "Supabase",    icon: "⚡",  color: "#3ecf8e" },
+  { label: "TRPC",        icon: "🔗",  color: "#398ccb" },
+  { label: "Prisma",      icon: "◭",   color: "#5a67d8" },
+  { label: "PHP",         icon: "🐘",  color: "#8892be" },
+  { label: "C#",          icon: "♯",   color: "#68217a" },
+  { label: "HTML",        icon: "🅗",   color: "#e34c26" },
+  { label: "CSS",         icon: "🎨",  color: "#264de4" },
 ];
 
 const STATS = [
-  { value: "16+",   label: "Projects" },
+  { value: "16+",  label: "Projects" },
   { value: "1+",   label: "Yrs Exp"  },
-  { value: "8",    label: "Stacks"   },
+  { value: "12",   label: "Stacks"   },
   { value: "100%", label: "Passion"  },
 ];
 
@@ -79,10 +240,6 @@ const stagger = { hidden: {}, visible: { transition: { staggerChildren: 0.08 } }
 const fadeUp = {
   hidden:   { opacity: 0, y: 28 },
   visible:  { opacity: 1, y: 0, transition: { duration: 0.6, ease: [0.22, 1, 0.36, 1] } },
-};
-const slideRight = {
-  hidden:   { opacity: 0, x: -30 },
-  visible:  { opacity: 1, x: 0,  transition: { duration: 0.55, ease: [0.22, 1, 0.36, 1] } },
 };
 
 /* ─────────────── SCROLL BAR ────────────────── */
@@ -96,18 +253,146 @@ function ScrollBar() {
   );
 }
 
+/* ─────────────── IMAGE SLIDESHOW MODAL ─────── */
+function SlideshowModal({ project, onClose, T }) {
+  const [idx, setIdx] = useState(0);
+  const images = project.images;
+
+  useEffect(() => {
+    const onKey = (e) => {
+      if (e.key === "Escape") onClose();
+      if (e.key === "ArrowRight") setIdx(i => (i + 1) % images.length);
+      if (e.key === "ArrowLeft")  setIdx(i => (i - 1 + images.length) % images.length);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [images.length, onClose]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+      onClick={onClose}
+      style={{ position: "fixed", inset: 0, zIndex: 300, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.88, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
+        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+        onClick={e => e.stopPropagation()}
+        style={{
+          background: T.bg2,
+          border: `1px solid ${T.border}`,
+          borderRadius: 20,
+          overflow: "hidden",
+          width: "100%",
+          maxWidth: 780,
+          boxShadow: "0 40px 100px rgba(0,0,0,0.6)",
+        }}
+      >
+        {/* Header */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.25rem", borderBottom: `1px solid ${T.border}` }}>
+          <div>
+            <h3 style={{ fontSize: "0.95rem", fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>{project.title}</h3>
+            <p style={{ fontSize: "0.62rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>{project.subtitle}</p>
+          </div>
+          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+            <a href={project.link} target="_blank" rel="noreferrer" style={{
+              display: "inline-flex", alignItems: "center", gap: "0.3rem",
+              fontSize: "0.68rem", fontFamily: "'JetBrains Mono', monospace",
+              color: T.accL, border: `1px solid rgba(45,212,191,0.3)`,
+              borderRadius: 99, padding: "0.3rem 0.75rem", textDecoration: "none",
+              background: "rgba(45,212,191,0.08)", transition: "all 0.2s",
+            }}>
+              <ExternalLink size={10} /> Visit Site
+            </a>
+            <button onClick={onClose} style={{ background: "none", border: `1px solid ${T.border}`, borderRadius: "50%", width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: T.muted }}>
+              <X size={14} />
+            </button>
+          </div>
+        </div>
+
+        {/* Image */}
+        <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden", background: "#000" }}>
+          <AnimatePresence mode="wait">
+            <motion.img
+              key={idx}
+              src={images[idx].src}
+              alt={`Slide ${idx + 1}`}
+              initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
+              transition={{ duration: 0.35 }}
+              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+            />
+          </AnimatePresence>
+
+          {/* Nav arrows */}
+          {images.length > 1 && (
+            <>
+              <button onClick={() => setIdx(i => (i - 1 + images.length) % images.length)} style={{
+                position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
+                width: 36, height: 36, borderRadius: "50%", border: `1px solid rgba(255,255,255,0.2)`,
+                background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", color: "#fff", transition: "background 0.2s",
+              }}>
+                <ChevronLeft size={16} />
+              </button>
+              <button onClick={() => setIdx(i => (i + 1) % images.length)} style={{
+                position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
+                width: 36, height: 36, borderRadius: "50%", border: `1px solid rgba(255,255,255,0.2)`,
+                background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)",
+                display: "flex", alignItems: "center", justifyContent: "center",
+                cursor: "pointer", color: "#fff", transition: "background 0.2s",
+              }}>
+                <ChevronRight size={16} />
+              </button>
+            </>
+          )}
+
+          {/* Counter badge */}
+          <div style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)", borderRadius: 99, padding: "0.2rem 0.65rem", fontSize: "0.6rem", fontFamily: "'JetBrains Mono', monospace", color: "#fff" }}>
+            {idx + 1} / {images.length}
+          </div>
+        </div>
+
+        {/* Caption */}
+        <div style={{ padding: "1rem 1.25rem", borderBottom: `1px solid ${T.border}` }}>
+          <AnimatePresence mode="wait">
+            <motion.p key={idx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
+              style={{ fontSize: "0.8rem", color: T.sub, lineHeight: 1.65 }}>
+              {images[idx].caption}
+            </motion.p>
+          </AnimatePresence>
+        </div>
+
+        {/* Dot indicators */}
+        <div style={{ padding: "0.85rem 1.25rem", display: "flex", gap: "0.4rem", alignItems: "center" }}>
+          {images.map((_, i) => (
+            <button key={i} onClick={() => setIdx(i)} style={{
+              width: i === idx ? 20 : 6, height: 6, borderRadius: 99,
+              background: i === idx ? T.accL : T.border,
+              border: "none", cursor: "pointer", padding: 0,
+              transition: "all 0.25s",
+            }} />
+          ))}
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
 /* ─────────────── MAIN ───────────────────────── */
 export default function Home() {
-  const [dark,       setDark]       = useState(true);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [scrolled,   setScrolled]   = useState(false);
-  const [active,     setActive]     = useState("home");
-  const [filter,     setFilter]     = useState("all");
+  const [dark,         setDark]         = useState(true);
+  const [drawerOpen,   setDrawerOpen]   = useState(false);
+  const [scrolled,     setScrolled]     = useState(false);
+  const [active,       setActive]       = useState("home");
+  const [filter,       setFilter]       = useState("all");
+  const [slideProject, setSlideProject] = useState(null);
+  const [isMobile,     setIsMobile]     = useState(() => window.innerWidth < 640);
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 40);
-      const ids = ["home","about","projects","skills","contact"];
+      const ids = ["home","about","experience","projects","skills","contact"];
       for (const id of [...ids].reverse()) {
         const el = document.getElementById(id);
         if (el && window.scrollY >= el.offsetTop - 130) { setActive(id); break; }
@@ -117,28 +402,35 @@ export default function Home() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  /* Close drawer on resize to desktop */
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setDrawerOpen(false); };
+    const onResize = () => {
+      if (window.innerWidth >= 768) setDrawerOpen(false);
+      setIsMobile(window.innerWidth < 640);
+    };
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* Theme tokens */
+  /* Lock body scroll when modal open */
+  useEffect(() => {
+    document.body.style.overflow = slideProject ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [slideProject]);
+
   const T = {
-    bg:       dark ? "#030a0a"                       : "#f0fafa",
-    bg2:      dark ? "#051212"                       : "#e0f5f5",
-    border:   dark ? "rgba(45,212,191,0.12)"         : "rgba(13,148,136,0.14)",
-    borderH:  dark ? "rgba(45,212,191,0.35)"         : "rgba(13,148,136,0.4)",
-    text:     dark ? "#e8fffe"                       : "#0a1f1f",
-    muted:    dark ? "rgba(232,255,254,0.38)"        : "rgba(10,31,31,0.4)",
-    sub:      dark ? "rgba(232,255,254,0.62)"        : "rgba(10,31,31,0.67)",
-    card:     dark ? "rgba(45,212,191,0.035)"        : "rgba(13,148,136,0.04)",
-    cardH:    dark ? "rgba(45,212,191,0.07)"         : "rgba(13,148,136,0.08)",
-    glass:    dark ? "rgba(3,10,10,0.88)"            : "rgba(240,250,250,0.9)",
-    acc:      "#0d9488",
-    accL:     "#2dd4bf",
-    accHov:   "#0f766e",
+    bg:      dark ? "#030a0a"                       : "#f0fafa",
+    bg2:     dark ? "#051212"                       : "#e0f5f5",
+    border:  dark ? "rgba(45,212,191,0.12)"         : "rgba(13,148,136,0.14)",
+    borderH: dark ? "rgba(45,212,191,0.35)"         : "rgba(13,148,136,0.4)",
+    text:    dark ? "#e8fffe"                       : "#0a1f1f",
+    muted:   dark ? "rgba(232,255,254,0.38)"        : "rgba(10,31,31,0.4)",
+    sub:     dark ? "rgba(232,255,254,0.62)"        : "rgba(10,31,31,0.67)",
+    card:    dark ? "rgba(45,212,191,0.035)"        : "rgba(13,148,136,0.04)",
+    cardH:   dark ? "rgba(45,212,191,0.07)"         : "rgba(13,148,136,0.08)",
+    glass:   dark ? "rgba(3,10,10,0.88)"            : "rgba(240,250,250,0.9)",
+    acc:     "#0d9488",
+    accL:    "#2dd4bf",
+    accHov:  "#0f766e",
   };
 
   const filtered = filter === "featured" ? PROJECTS.filter(p => p.featured) : PROJECTS;
@@ -168,7 +460,6 @@ export default function Home() {
     }
   `;
 
-  /* Shared section label style */
   const sectionLabel = { fontSize:"0.65rem", fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.14em", textTransform:"uppercase", color: T.accL, marginBottom:"0.75rem" };
   const sectionTitle = { fontSize:"clamp(1.9rem,4.5vw,3.2rem)", fontWeight:800, letterSpacing:"-0.04em", lineHeight:1.05, color: T.text };
 
@@ -176,6 +467,13 @@ export default function Home() {
     <div style={{ background:T.bg, color:T.text, fontFamily:"'Plus Jakarta Sans', sans-serif", transition:"background 0.35s, color 0.35s", overflowX:"hidden", minHeight:"100svh" }}>
       <style>{css}</style>
       <ScrollBar />
+
+      {/* ── SLIDESHOW MODAL ── */}
+      <AnimatePresence>
+        {slideProject && (
+          <SlideshowModal project={slideProject} onClose={() => setSlideProject(null)} T={T} />
+        )}
+      </AnimatePresence>
 
       {/* ── DRAWER OVERLAY ── */}
       <AnimatePresence>
@@ -207,7 +505,6 @@ export default function Home() {
               overflowY:"auto",
             }}
           >
-            {/* Drawer header */}
             <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", padding:"1.25rem 1.25rem 1rem", borderBottom:`1px solid ${T.border}` }}>
               <span style={{ fontWeight:800, fontSize:"1.15rem", letterSpacing:"-0.04em", color:T.text }}>
                 mj<span style={{ color:T.accL }}>dev</span><span style={{ color:T.muted }}>.</span>
@@ -216,8 +513,6 @@ export default function Home() {
                 <X size={14} />
               </button>
             </div>
-
-            {/* Drawer nav */}
             <nav style={{ flex:1, padding:"1rem 0.75rem", display:"flex", flexDirection:"column", gap:"0.25rem" }}>
               {NAV_ITEMS.map(({ label, icon }) => {
                 const id = label.toLowerCase();
@@ -240,8 +535,6 @@ export default function Home() {
                 );
               })}
             </nav>
-
-            {/* Drawer footer */}
             <div style={{ padding:"1rem 1.25rem", borderTop:`1px solid ${T.border}` }}>
               <div style={{ display:"flex", gap:"0.5rem", marginBottom:"0.75rem" }}>
                 {[
@@ -278,15 +571,13 @@ export default function Home() {
         padding:"0 clamp(1rem,5vw,3rem)",
         justifyContent:"space-between",
       }}>
-        {/* Logo */}
         <motion.div initial={{ opacity:0, x:-16 }} animate={{ opacity:1, x:0 }} transition={{ duration:0.55 }}>
           <span style={{ fontWeight:800, fontSize:"1.15rem", letterSpacing:"-0.04em", color:T.text }}>
             mj<span style={{ color:T.accL }}>dev</span><span style={{ color:T.muted }}>.</span>
           </span>
         </motion.div>
 
-        {/* Desktop nav — hidden on mobile */}
-        <nav className="hidden md:flex" style={{ gap:"2rem", alignItems:"center" }}>
+        <nav style={{ gap:"2rem", alignItems:"center", display:"none" }} className="hidden md:flex">
           {NAV_ITEMS.map(({ label }) => {
             const id = label.toLowerCase();
             const isAct = active === id;
@@ -309,7 +600,6 @@ export default function Home() {
           })}
         </nav>
 
-        {/* Right controls */}
         <div style={{ display:"flex", gap:"0.5rem", alignItems:"center" }}>
           <button onClick={() => setDark(!dark)} style={{
             width:36, height:36, borderRadius:"50%", border:`1px solid ${T.border}`,
@@ -321,9 +611,7 @@ export default function Home() {
           >
             {dark ? <Sun size={14}/> : <Moon size={14}/>}
           </button>
-
-          {/* Hamburger — mobile only */}
-          <button onClick={() => setDrawerOpen(true)} className="flex md:hidden" style={{
+          <button onClick={() => setDrawerOpen(true)} style={{
             width:36, height:36, borderRadius:"50%", border:`1px solid ${T.border}`,
             background:T.card, display:"flex", alignItems:"center", justifyContent:"center",
             cursor:"pointer", color:T.muted,
@@ -341,15 +629,12 @@ export default function Home() {
         padding:"80px clamp(1rem,6vw,4.5rem) 60px",
         position:"relative", overflow:"hidden",
       }}>
-        {/* Ambient blobs */}
         <div style={{ position:"absolute", top:"5%",  right:"-10%", width:"min(560px,60vw)", height:"min(560px,60vw)", borderRadius:"50%", background:"radial-gradient(circle, rgba(13,148,136,0.13) 0%, transparent 70%)", pointerEvents:"none" }} />
         <div style={{ position:"absolute", bottom:"8%", left:"-8%",  width:"min(320px,40vw)", height:"min(320px,40vw)", borderRadius:"50%", background:"radial-gradient(circle, rgba(45,212,191,0.07) 0%, transparent 70%)", pointerEvents:"none" }} />
-        {/* Grid pattern */}
         <div style={{ position:"absolute", inset:0, backgroundImage:`linear-gradient(${T.border} 1px,transparent 1px),linear-gradient(90deg,${T.border} 1px,transparent 1px)`, backgroundSize:"60px 60px", opacity:0.5, pointerEvents:"none" }} />
 
-        <div style={{ maxWidth:1200, margin:"0 auto", width:"100%", display:"grid", gridTemplateColumns:"1fr auto", gap:"2rem", alignItems:"center" }}>
+        <div style={{ maxWidth:1200, margin:"0 auto", width:"100%", display:"grid", gridTemplateColumns: isMobile ? "1fr" : "1fr auto", gap:"2rem", alignItems:"center" }}>
           <motion.div variants={stagger} initial="hidden" animate="visible">
-            {/* Badge */}
             <motion.div variants={fadeUp} style={{ marginBottom:"1.5rem" }}>
               <span style={{
                 display:"inline-flex", alignItems:"center", gap:"0.45rem",
@@ -364,13 +649,11 @@ export default function Home() {
               </span>
             </motion.div>
 
-            {/* Heading */}
             <motion.h1 variants={fadeUp} style={{ fontSize:"clamp(2.6rem,8.5vw,6.8rem)", fontWeight:800, lineHeight:0.92, letterSpacing:"-0.05em", marginBottom:"1.5rem" }}>
               Muhajir<br/>
               <span className="shimmer-text">Payao</span>
             </motion.h1>
 
-            {/* Role line */}
             <motion.div variants={fadeUp} style={{ display:"flex", alignItems:"center", gap:"0.8rem", marginBottom:"1.25rem" }}>
               <div style={{ width:28, height:1.5, background: `linear-gradient(90deg, ${T.accL}, transparent)`, borderRadius:2 }} />
               <span style={{ fontSize:"0.72rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted, letterSpacing:"0.1em", textTransform:"uppercase" }}>
@@ -382,7 +665,6 @@ export default function Home() {
               I craft responsive, high-performing web experiences through clean code and thoughtful, purposeful design.
             </motion.p>
 
-            {/* Meta */}
             <motion.div variants={fadeUp} style={{ display:"flex", flexWrap:"wrap", gap:"1rem", marginBottom:"2rem" }}>
               {["Taguig City, Philippines","0928 865 5443"].map((txt,i) => (
                 <span key={i} style={{ display:"flex", alignItems:"center", gap:"0.35rem", fontSize:"0.7rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted }}>
@@ -391,7 +673,6 @@ export default function Home() {
               ))}
             </motion.div>
 
-            {/* CTAs */}
             <motion.div variants={fadeUp} style={{ display:"flex", flexWrap:"wrap", gap:"0.75rem" }}>
               <a href="#projects" style={{
                 display:"inline-flex", alignItems:"center", gap:"0.4rem",
@@ -420,18 +701,14 @@ export default function Home() {
             </motion.div>
           </motion.div>
 
-          {/* Photo — hidden on xs, shown from sm */}
+          {!isMobile && (
           <motion.div
             initial={{ opacity:0, scale:0.82 }} animate={{ opacity:1, scale:1 }}
             transition={{ duration:0.95, ease:[0.22,1,0.36,1] }}
-            className="hidden sm:block"
             style={{ position:"relative", flexShrink:0 }}
           >
-            {/* Outer ring */}
             <div style={{ position:"absolute", inset:-28, borderRadius:"50%", border:"1px dashed rgba(45,212,191,0.2)" }} className="orbit" />
-            {/* Inner ring */}
             <div style={{ position:"absolute", inset:-12, borderRadius:"50%", border:"1px solid rgba(45,212,191,0.1)" }} />
-            {/* Photo */}
             <div style={{
               width:"clamp(145px,15vw,205px)", height:"clamp(145px,15vw,205px)",
               borderRadius:"50%", overflow:"hidden",
@@ -441,7 +718,6 @@ export default function Home() {
             }} className="float-y">
               <img src={hero} alt="Muhajir Payao" style={{ width:"100%", height:"100%", objectFit:"cover" }}/>
             </div>
-            {/* Tag */}
             <motion.div
               initial={{ opacity:0, x:18 }} animate={{ opacity:1, x:0 }} transition={{ delay:0.95 }}
               style={{
@@ -455,6 +731,7 @@ export default function Home() {
               Fullstack Dev 🚀
             </motion.div>
           </motion.div>
+          )}
         </div>
       </section>
 
@@ -479,7 +756,6 @@ export default function Home() {
       ══════════════════════════════════════════ */}
       <section id="about" style={{ padding:"clamp(4rem,10vw,8rem) clamp(1rem,6vw,4.5rem)" }}>
         <div style={{ maxWidth:1200, margin:"0 auto", display:"grid", gridTemplateColumns:"repeat(auto-fit,minmax(260px,1fr))", gap:"clamp(2rem,6vw,5rem)", alignItems:"center" }}>
-          {/* Photo card */}
           <motion.div
             initial={{ opacity:0, x:-40 }} whileInView={{ opacity:1, x:0 }}
             viewport={{ once:true }} transition={{ duration:0.7, ease:[0.22,1,0.36,1] }}
@@ -494,19 +770,17 @@ export default function Home() {
             </div>
           </motion.div>
 
-          {/* Text */}
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once:true }}>
             <motion.p variants={fadeUp} style={sectionLabel}>— About Me</motion.p>
             <motion.h2 variants={fadeUp} style={{ ...sectionTitle, marginBottom:"1.5rem" }}>
               Crafting digital<br/><span style={{ color:T.muted }}>experiences.</span>
             </motion.h2>
             <motion.p variants={fadeUp} style={{ fontSize:"0.97rem", color:T.sub, lineHeight:1.8, marginBottom:"1rem", maxWidth:420 }}>
-              I'm a passionate web and mobile developer who enjoys building modern, elegant, and user-friendly experiences. I specialize in Flutter, React, and Python — always eager to learn and innovate.
+              I'm a passionate web and mobile developer who enjoys building modern, elegant, and user-friendly experiences. I specialize in Flutter, React, Next.js, and TypeScript — always eager to learn and innovate.
             </motion.p>
             <motion.p variants={fadeUp} style={{ fontSize:"0.88rem", fontStyle:"italic", color:T.muted, lineHeight:1.7, maxWidth:420, marginBottom:"2rem", borderLeft:`2px solid ${T.accL}`, paddingLeft:"1rem" }}>
               "Good design is invisible. Great code makes it fast."
             </motion.p>
-            {/* Feature chips */}
             <motion.div variants={fadeUp} style={{ display:"flex", flexWrap:"wrap", gap:"0.5rem", marginBottom:"2rem" }}>
               {[
                 { icon:Code2,  label:"Clean Code"    },
@@ -532,11 +806,93 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════
+          EXPERIENCE
+      ══════════════════════════════════════════ */}
+      <section id="experience" style={{ padding:"clamp(4rem,10vw,8rem) clamp(1rem,6vw,4.5rem)", borderTop:`1px solid ${T.border}` }}>
+        <div style={{ maxWidth:1200, margin:"0 auto" }}>
+          <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once:true }} style={{ marginBottom:"3rem" }}>
+            <motion.p variants={fadeUp} style={sectionLabel}>— Work History</motion.p>
+            <motion.h2 variants={fadeUp} style={sectionTitle}>Experience<span style={{ color:T.muted }}>.</span></motion.h2>
+          </motion.div>
+
+          {/* Timeline */}
+          <div style={{ position:"relative" }}>
+            {/* Vertical line */}
+            <div style={{ position:"absolute", left: 19, top:0, bottom:0, width:1, background:`linear-gradient(to bottom, ${T.accL}, transparent)`, opacity:0.25 }} />
+
+            <div style={{ display:"flex", flexDirection:"column", gap:"2rem" }}>
+              {EXPERIENCE.map((exp, i) => (
+                <motion.div key={exp.id}
+                  initial={{ opacity:0, x:-30 }} whileInView={{ opacity:1, x:0 }}
+                  viewport={{ once:true }} transition={{ delay:i*0.12, duration:0.6, ease:[0.22,1,0.36,1] }}
+                  style={{ display:"flex", gap:"1.5rem", alignItems:"flex-start" }}
+                >
+                  {/* Timeline dot */}
+                  <div style={{ flexShrink:0, width:40, height:40, borderRadius:"50%", border:`1px solid ${exp.accent}40`, background:`${exp.accent}12`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.1rem", position:"relative", zIndex:1 }}>
+                    {exp.logo}
+                  </div>
+
+                  {/* Card */}
+                  <motion.div
+                    whileHover={{ y:-3 }}
+                    style={{
+                      flex:1,
+                      background:T.card, border:`1px solid ${T.border}`,
+                      borderRadius:16, padding:"1.4rem 1.6rem",
+                      transition:"background 0.2s, border-color 0.2s, box-shadow 0.3s",
+                      position:"relative", overflow:"hidden",
+                    }}
+                    onMouseEnter={e => {
+                      e.currentTarget.style.background = T.cardH;
+                      e.currentTarget.style.borderColor = `${exp.accent}40`;
+                      e.currentTarget.style.boxShadow = dark ? "0 12px 40px rgba(0,0,0,0.4)" : "0 12px 40px rgba(0,0,0,0.06)";
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.background = T.card;
+                      e.currentTarget.style.borderColor = T.border;
+                      e.currentTarget.style.boxShadow = "none";
+                    }}
+                  >
+                    {/* Accent splash */}
+                    <div style={{ position:"absolute", top:0, right:0, width:140, height:100, background:`radial-gradient(circle at top right, ${exp.accent}10, transparent 70%)`, pointerEvents:"none" }} />
+
+                    {/* Top row */}
+                    <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:"0.5rem", marginBottom:"0.75rem" }}>
+                      <div>
+                        <h3 style={{ fontSize:"1.05rem", fontWeight:800, letterSpacing:"-0.02em", color:T.text, marginBottom:"0.1rem" }}>{exp.company}</h3>
+                        <p style={{ fontSize:"0.75rem", fontWeight:600, color:exp.accent }}>{exp.role}</p>
+                      </div>
+                      <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:"0.25rem" }}>
+                        <span style={{ display:"inline-flex", alignItems:"center", gap:"0.3rem", fontSize:"0.6rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted, border:`1px solid ${T.border}`, borderRadius:99, padding:"0.15rem 0.55rem" }}>
+                          <Briefcase size={9}/> {exp.type}
+                        </span>
+                        <span style={{ display:"inline-flex", alignItems:"center", gap:"0.3rem", fontSize:"0.6rem", fontFamily:"'JetBrains Mono', monospace", color:T.accL }}>
+                          <Calendar size={9}/> {exp.range}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p style={{ fontSize:"0.85rem", color:T.sub, lineHeight:1.72, marginBottom:"1rem" }}>{exp.desc}</p>
+
+                    {/* Stack chips */}
+                    <div style={{ display:"flex", flexWrap:"wrap", gap:"0.28rem" }}>
+                      {exp.stack.map(s => (
+                        <span key={s} style={{ fontSize:"0.58rem", fontFamily:"'JetBrains Mono', monospace", border:`1px solid ${exp.accent}30`, color:exp.accent, padding:"0.16rem 0.55rem", borderRadius:99, background:`${exp.accent}08` }}>{s}</span>
+                      ))}
+                    </div>
+                  </motion.div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ══════════════════════════════════════════
           PROJECTS
       ══════════════════════════════════════════ */}
       <section id="projects" style={{ padding:"clamp(4rem,10vw,8rem) clamp(1rem,6vw,4.5rem)", borderTop:`1px solid ${T.border}` }}>
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
-          {/* Header */}
           <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once:true }}
             style={{ display:"flex", alignItems:"flex-end", justifyContent:"space-between", flexWrap:"wrap", gap:"1.5rem", marginBottom:"2.5rem" }}>
             <div>
@@ -566,6 +922,7 @@ export default function Home() {
             >
               {filtered.map((proj,i) => {
                 const Icon = proj.icon;
+                const hasSlideshow = proj.images && proj.images.length > 0;
                 return (
                   <motion.div key={proj.id}
                     initial={{ opacity:0, y:26 }} whileInView={{ opacity:1, y:0 }}
@@ -589,10 +946,8 @@ export default function Home() {
                       e.currentTarget.style.boxShadow    = "none";
                     }}
                   >
-                    {/* Accent splash */}
                     <div style={{ position:"absolute", top:0, right:0, width:120, height:120, background:`radial-gradient(circle at top right, ${proj.accent}18, transparent 70%)`, pointerEvents:"none" }} />
 
-                    {/* Top row */}
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between" }}>
                       <div style={{ width:40, height:40, borderRadius:10, background:`${proj.accent}16`, border:`1px solid ${proj.accent}30`, display:"flex", alignItems:"center", justifyContent:"center" }}>
                         <Icon size={17} color={proj.accent}/>
@@ -607,31 +962,47 @@ export default function Home() {
                       </div>
                     </div>
 
-                    {/* Content */}
                     <div>
                       <h3 style={{ fontSize:"0.98rem", fontWeight:800, letterSpacing:"-0.02em", marginBottom:"0.18rem", color:T.text }}>{proj.title}</h3>
                       <p style={{ fontSize:"0.65rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted, letterSpacing:"0.05em", marginBottom:"0.6rem" }}>{proj.subtitle}</p>
                       <p style={{ fontSize:"0.82rem", color:T.sub, lineHeight:1.65 }} className="lc3">{proj.desc}</p>
                     </div>
 
-                    {/* Stack + link */}
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem", marginTop:"auto" }}>
                       <div style={{ display:"flex", flexWrap:"wrap", gap:"0.28rem" }}>
                         {proj.stack.map(s => (
                           <span key={s} style={{ fontSize:"0.58rem", fontFamily:"'JetBrains Mono', monospace", border:`1px solid ${T.border}`, color:T.muted, padding:"0.16rem 0.48rem", borderRadius:99 }}>{s}</span>
                         ))}
                       </div>
-                      <a href={proj.link} style={{
-                        width:28, height:28, borderRadius:"50%",
-                        border:`1px solid ${proj.accent}40`, background:`${proj.accent}12`,
-                        display:"flex", alignItems:"center", justifyContent:"center",
-                        color:proj.accent, textDecoration:"none", transition:"background 0.2s", flexShrink:0,
-                      }}
-                        onMouseEnter={e => e.currentTarget.style.background = `${proj.accent}28`}
-                        onMouseLeave={e => e.currentTarget.style.background = `${proj.accent}12`}
-                      >
-                        <ArrowUpRight size={12}/>
-                      </a>
+
+                      {/* Action buttons */}
+                      <div style={{ display:"flex", gap:"0.3rem", flexShrink:0 }}>
+                        {hasSlideshow && (
+                          <button onClick={() => setSlideProject(proj)} style={{
+                            height:28, padding:"0 0.55rem", borderRadius:99,
+                            border:`1px solid ${proj.accent}40`, background:`${proj.accent}12`,
+                            display:"flex", alignItems:"center", justifyContent:"center", gap:"0.25rem",
+                            color:proj.accent, cursor:"pointer", transition:"background 0.2s", flexShrink:0,
+                            fontSize:"0.58rem", fontFamily:"'JetBrains Mono', monospace",
+                          }}
+                            onMouseEnter={e => e.currentTarget.style.background = `${proj.accent}28`}
+                            onMouseLeave={e => e.currentTarget.style.background = `${proj.accent}12`}
+                          >
+                            <span style={{ fontSize:"0.6rem" }}>🖼</span> Gallery
+                          </button>
+                        )}
+                        <a href={proj.link} target={proj.link !== "#" ? "_blank" : undefined} rel="noreferrer" style={{
+                          width:28, height:28, borderRadius:"50%",
+                          border:`1px solid ${proj.accent}40`, background:`${proj.accent}12`,
+                          display:"flex", alignItems:"center", justifyContent:"center",
+                          color:proj.accent, textDecoration:"none", transition:"background 0.2s", flexShrink:0,
+                        }}
+                          onMouseEnter={e => e.currentTarget.style.background = `${proj.accent}28`}
+                          onMouseLeave={e => e.currentTarget.style.background = `${proj.accent}12`}
+                        >
+                          <ArrowUpRight size={12}/>
+                        </a>
+                      </div>
                     </div>
                   </motion.div>
                 );
@@ -665,7 +1036,20 @@ export default function Home() {
                 onMouseEnter={e => { e.currentTarget.style.background = T.cardH; e.currentTarget.style.borderColor = T.borderH; }}
                 onMouseLeave={e => { e.currentTarget.style.background = T.card;  e.currentTarget.style.borderColor = T.border;  }}
               >
-                <img src={`/src/assets/${sk.img}`} alt={sk.label} style={{ width:30, height:30, objectFit:"contain" }}/>
+                {/* Icon badge */}
+                <div style={{
+                  width: 36, height: 36, borderRadius: 10,
+                  background: `${sk.color}18`,
+                  border: `1px solid ${sk.color}30`,
+                  display:"flex", alignItems:"center", justifyContent:"center",
+                  fontSize: sk.mono ? "0.75rem" : "1.1rem",
+                  fontWeight: 900,
+                  fontFamily: sk.mono ? "'JetBrains Mono', monospace" : "inherit",
+                  color: sk.color,
+                  letterSpacing: sk.mono ? "-0.05em" : "normal",
+                }}>
+                  {sk.icon}
+                </div>
                 <span style={{ fontSize:"0.6rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted, letterSpacing:"0.04em", textAlign:"center" }}>{sk.label}</span>
               </motion.div>
             ))}
@@ -691,7 +1075,6 @@ export default function Home() {
               position:"relative", overflow:"hidden",
             }}
           >
-            {/* BG decoration */}
             <div style={{ position:"absolute", top:"-30%", right:"-10%", width:400, height:400, borderRadius:"50%", background:"radial-gradient(circle, rgba(45,212,191,0.07) 0%, transparent 65%)", pointerEvents:"none" }} />
 
             <span style={sectionLabel}>— Get in Touch</span>
@@ -726,7 +1109,6 @@ export default function Home() {
                 <Facebook size={14}/> Facebook
               </a>
             </div>
-            {/* Info row */}
             <div style={{ display:"flex", flexWrap:"wrap", justifyContent:"center", gap:"1.5rem", paddingTop:"1rem", borderTop:`1px solid ${T.border}`, width:"100%" }}>
               {[
                 { icon:MapPin, text:"Taguig City, Philippines" },
