@@ -1,4 +1,3 @@
-
 import hero from '../assets/hero.jpg';
 import {
   Mail, Github, MapPin, Phone, Twitter, Facebook,
@@ -9,7 +8,7 @@ import {
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
 import { useEffect, useState } from "react";
-//testing
+
 /* ─────────────── DATA ─────────────────────── */
 const NAV_ITEMS = [
   { label: "Home",       icon: "🏠" },
@@ -211,7 +210,7 @@ const PROJECTS = [
   },
 ];
 
-/* ── SKILLS (icon-based, no images needed) ── */
+/* ── SKILLS ── */
 const SKILLS = [
   { label: "React",       icon: "⚛️",  color: "#61dafb" },
   { label: "TypeScript",  icon: "𝗧𝗦",  color: "#3178c6", mono: true },
@@ -324,7 +323,6 @@ function SlideshowModal({ project, onClose, T }) {
             />
           </AnimatePresence>
 
-          {/* Nav arrows */}
           {images.length > 1 && (
             <>
               <button onClick={() => setIdx(i => (i - 1 + images.length) % images.length)} style={{
@@ -348,7 +346,6 @@ function SlideshowModal({ project, onClose, T }) {
             </>
           )}
 
-          {/* Counter badge */}
           <div style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)", borderRadius: 99, padding: "0.2rem 0.65rem", fontSize: "0.6rem", fontFamily: "'JetBrains Mono', monospace", color: "#fff" }}>
             {idx + 1} / {images.length}
           </div>
@@ -389,6 +386,12 @@ export default function Home() {
   const [filter,       setFilter]       = useState("all");
   const [slideProject, setSlideProject] = useState(null);
   const [isMobile,     setIsMobile]     = useState(() => window.innerWidth < 640);
+  const [expandedDescs, setExpandedDescs] = useState({});
+
+  const toggleDesc = (id, e) => {
+    e.stopPropagation();
+    setExpandedDescs(prev => ({ ...prev, [id]: !prev[id] }));
+  };
 
   useEffect(() => {
     const onScroll = () => {
@@ -412,7 +415,6 @@ export default function Home() {
     return () => window.removeEventListener("resize", onResize);
   }, []);
 
-  /* Lock body scroll when modal open */
   useEffect(() => {
     document.body.style.overflow = slideProject ? "hidden" : "";
     return () => { document.body.style.overflow = ""; };
@@ -450,7 +452,6 @@ export default function Home() {
     .float-y  { animation:floatY 5s ease-in-out infinite; }
     .orbit    { animation:orbitSpin 22s linear infinite; }
     .pdot     { animation:pulseDot 2.2s ease-in-out infinite; }
-    .lc3 { display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
     .shimmer-text {
       background: linear-gradient(90deg, #2dd4bf 0%, #99f6e4 40%, #2dd4bf 80%);
       background-size: 200% auto;
@@ -541,7 +542,7 @@ export default function Home() {
                 {[
                   { icon: Github,   href:"https://github.com/" },
                   { icon: Facebook, href:"https://www.facebook.com/muhajir.payao/" },
-                  { icon: Mail,     href:"mailto:payao.118253@globalcity.sti.edu.ph" },
+                  { icon: Mail,     href:"mailto:mhjrpy@gmail.com" },
                 ].map(({ icon:Icon, href }, i) => (
                   <a key={i} href={href} target="_blank" rel="noreferrer" style={{
                     width:34, height:34, borderRadius:"50%", border:`1px solid ${T.border}`,
@@ -816,11 +817,8 @@ export default function Home() {
             <motion.h2 variants={fadeUp} style={sectionTitle}>Experience<span style={{ color:T.muted }}>.</span></motion.h2>
           </motion.div>
 
-          {/* Timeline */}
           <div style={{ position:"relative" }}>
-            {/* Vertical line */}
             <div style={{ position:"absolute", left: 19, top:0, bottom:0, width:1, background:`linear-gradient(to bottom, ${T.accL}, transparent)`, opacity:0.25 }} />
-
             <div style={{ display:"flex", flexDirection:"column", gap:"2rem" }}>
               {EXPERIENCE.map((exp, i) => (
                 <motion.div key={exp.id}
@@ -828,12 +826,9 @@ export default function Home() {
                   viewport={{ once:true }} transition={{ delay:i*0.12, duration:0.6, ease:[0.22,1,0.36,1] }}
                   style={{ display:"flex", gap:"1.5rem", alignItems:"flex-start" }}
                 >
-                  {/* Timeline dot */}
                   <div style={{ flexShrink:0, width:40, height:40, borderRadius:"50%", border:`1px solid ${exp.accent}40`, background:`${exp.accent}12`, display:"flex", alignItems:"center", justifyContent:"center", fontSize:"1.1rem", position:"relative", zIndex:1 }}>
                     {exp.logo}
                   </div>
-
-                  {/* Card */}
                   <motion.div
                     whileHover={{ y:-3 }}
                     style={{
@@ -854,10 +849,7 @@ export default function Home() {
                       e.currentTarget.style.boxShadow = "none";
                     }}
                   >
-                    {/* Accent splash */}
                     <div style={{ position:"absolute", top:0, right:0, width:140, height:100, background:`radial-gradient(circle at top right, ${exp.accent}10, transparent 70%)`, pointerEvents:"none" }} />
-
-                    {/* Top row */}
                     <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between", flexWrap:"wrap", gap:"0.5rem", marginBottom:"0.75rem" }}>
                       <div>
                         <h3 style={{ fontSize:"1.05rem", fontWeight:800, letterSpacing:"-0.02em", color:T.text, marginBottom:"0.1rem" }}>{exp.company}</h3>
@@ -872,10 +864,7 @@ export default function Home() {
                         </span>
                       </div>
                     </div>
-
                     <p style={{ fontSize:"0.85rem", color:T.sub, lineHeight:1.72, marginBottom:"1rem" }}>{exp.desc}</p>
-
-                    {/* Stack chips */}
                     <div style={{ display:"flex", flexWrap:"wrap", gap:"0.28rem" }}>
                       {exp.stack.map(s => (
                         <span key={s} style={{ fontSize:"0.58rem", fontFamily:"'JetBrains Mono', monospace", border:`1px solid ${exp.accent}30`, color:exp.accent, padding:"0.16rem 0.55rem", borderRadius:99, background:`${exp.accent}08` }}>{s}</span>
@@ -924,6 +913,7 @@ export default function Home() {
               {filtered.map((proj,i) => {
                 const Icon = proj.icon;
                 const hasSlideshow = proj.images && proj.images.length > 0;
+                const isExpanded = expandedDescs[proj.id];
                 return (
                   <motion.div key={proj.id}
                     initial={{ opacity:0, y:26 }} whileInView={{ opacity:1, y:0 }}
@@ -966,7 +956,31 @@ export default function Home() {
                     <div>
                       <h3 style={{ fontSize:"0.98rem", fontWeight:800, letterSpacing:"-0.02em", marginBottom:"0.18rem", color:T.text }}>{proj.title}</h3>
                       <p style={{ fontSize:"0.65rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted, letterSpacing:"0.05em", marginBottom:"0.6rem" }}>{proj.subtitle}</p>
-                      <p style={{ fontSize:"0.82rem", color:T.sub, lineHeight:1.65 }} className="lc3">{proj.desc}</p>
+
+                      {/* ── DESCRIPTION WITH SEE MORE ── */}
+                      <p style={{
+                        fontSize:"0.82rem", color:T.sub, lineHeight:1.65,
+                        display: isExpanded ? "block" : "-webkit-box",
+                        WebkitLineClamp: isExpanded ? "unset" : 3,
+                        WebkitBoxOrient: "vertical",
+                        overflow: "hidden",
+                      }}>
+                        {proj.desc}
+                      </p>
+                      <button
+                        onClick={(e) => toggleDesc(proj.id, e)}
+                        style={{
+                          background: "none", border: "none", cursor: "pointer",
+                          padding: "4px 0 0", marginTop: "2px",
+                          fontSize: "0.68rem", fontFamily: "'JetBrains Mono', monospace",
+                          color: proj.accent, display: "inline-flex", alignItems: "center", gap: "0.25rem",
+                          transition: "opacity 0.2s",
+                        }}
+                        onMouseEnter={e => e.currentTarget.style.opacity = "0.7"}
+                        onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+                      >
+                        {isExpanded ? "See less ↑" : "See more ↓"}
+                      </button>
                     </div>
 
                     <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem", marginTop:"auto" }}>
@@ -976,7 +990,6 @@ export default function Home() {
                         ))}
                       </div>
 
-                      {/* Action buttons */}
                       <div style={{ display:"flex", gap:"0.3rem", flexShrink:0 }}>
                         {hasSlideshow && (
                           <button onClick={() => setSlideProject(proj)} style={{
@@ -1037,7 +1050,6 @@ export default function Home() {
                 onMouseEnter={e => { e.currentTarget.style.background = T.cardH; e.currentTarget.style.borderColor = T.borderH; }}
                 onMouseLeave={e => { e.currentTarget.style.background = T.card;  e.currentTarget.style.borderColor = T.border;  }}
               >
-                {/* Icon badge */}
                 <div style={{
                   width: 36, height: 36, borderRadius: 10,
                   background: `${sk.color}18`,
@@ -1086,7 +1098,7 @@ export default function Home() {
               Interested in collaborating or want to discuss a project? I'd love to hear from you.
             </p>
             <div style={{ display:"flex", flexWrap:"wrap", gap:"0.75rem", justifyContent:"center" }}>
-              <a href="mailto:payao.118253@globalcity.sti.edu.ph" style={{
+              <a href="mailto:mhjrpy@gmail.com" style={{
                 display:"inline-flex", alignItems:"center", gap:"0.45rem",
                 background:`linear-gradient(135deg, ${T.acc}, ${T.accL})`,
                 color:"#fff", borderRadius:99, padding:"0.65rem 1.6rem",
@@ -1114,7 +1126,7 @@ export default function Home() {
               {[
                 { icon:MapPin, text:"Taguig City, Philippines" },
                 { icon:Phone,  text:"0928 865 5443"           },
-                { icon:Mail,   text:"payao.118253@globalcity.sti.edu.ph" },
+                { icon:Mail,   text:"mhjrpy@gmail.com" },
               ].map(({ icon:Icon, text },i) => (
                 <div key={i} style={{ display:"flex", alignItems:"center", gap:"0.4rem", fontSize:"0.68rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted }}>
                   <Icon size={11}/> {text}
@@ -1133,7 +1145,7 @@ export default function Home() {
           </span>
           <div style={{ display:"flex", gap:"0.45rem" }}>
             {[
-              { icon:Mail,     href:"mailto:payao.118253@globalcity.sti.edu.ph" },
+              { icon:Mail,     href:"mailto:mhjrpy@gmail.com" },
               { icon:Github,   href:"https://github.com/"                       },
               { icon:Facebook, href:"https://www.facebook.com/muhajir.payao/"   },
               { icon:Twitter,  href:"https://twitter.com"                       },
@@ -1156,4 +1168,3 @@ export default function Home() {
     </div>
   );
 }
-//try
