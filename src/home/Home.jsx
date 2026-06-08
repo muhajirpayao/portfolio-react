@@ -41,7 +41,7 @@ const EXPERIENCE = [
     desc: "Maintained a strong CSAT rating and collaborated cross-functionally to improve service workflows. Alongside the support role, developed and maintained internal mobile applications to streamline team operations and reporting.",
     stack: ["CRM Tools", "Zendesk", "Flutter", "Mobile Dev", "Communication"],
     accent: "#34d399",
-    logo: "🏢",s
+    logo: "🏢",
   },
 ];
 
