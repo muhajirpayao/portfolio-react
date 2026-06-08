@@ -1,3 +1,4 @@
+import Home from "./home/Home";
 import hero from '../assets/hero.jpg';
 import {
   Mail, Github, MapPin, Phone, Twitter, Facebook,
