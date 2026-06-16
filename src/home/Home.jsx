@@ -4,10 +4,11 @@ import {
   ArrowUpRight, Moon, Sun, Menu, X,
   Box, ShoppingCart, Gamepad2, Globe, Folder, BarChart3,
   ChevronRight, Code2, Layers, Zap, Users, ChevronLeft,
-  ExternalLink, Briefcase, Calendar
+  ExternalLink, Briefcase, Calendar, Download, Star, GitFork,
+  Eye, BookOpen,
 } from "lucide-react";
 import { motion, AnimatePresence, useScroll, useSpring } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 /* ─────────────── DATA ─────────────────────── */
 const NAV_ITEMS = [
@@ -16,8 +17,47 @@ const NAV_ITEMS = [
   { label: "Experience", icon: "💼" },
   { label: "Projects",   icon: "🗂️" },
   { label: "Skills",     icon: "⚡" },
+  { label: "GitHub",     icon: "🐙" },
   { label: "Contact",    icon: "✉️"  },
 ];
+
+/* ── GITHUB CONFIG ── */
+const GITHUB_USERNAME = "muhajirpayao"; // ← update to your real username
+const GITHUB_PROFILE  = `https://github.com/${GITHUB_USERNAME}`;
+
+const PINNED_REPOS = [
+  {
+    name: "zharm-vault",
+    desc: "Cloud-based file management platform with Google Drive integration and Supabase backend.",
+    stars: 8,
+    forks: 1,
+    lang: "JavaScript",
+    langColor: "#f7df1e",
+    url: GITHUB_PROFILE,
+  },
+  {
+    name: "inventory-pos",
+    desc: "Scalable POS & inventory system with barcode scanning and real-time reporting.",
+    stars: 6,
+    forks: 2,
+    lang: "JavaScript",
+    langColor: "#f7df1e",
+    url: GITHUB_PROFILE,
+  },
+  {
+    name: "amorebella-mis",
+    desc: "Cross-platform MIS for Amorebella Funeral Homes — Flutter + Firebase capstone project.",
+    stars: 5,
+    forks: 1,
+    lang: "Dart",
+    langColor: "#00B4AB",
+    url: GITHUB_PROFILE,
+  },
+];
+
+/* ── RESUME ── */
+// Replace this with the actual public URL to your resume PDF
+const RESUME_URL = "/resume.pdf";
 
 /* ── EXPERIENCE ── */
 const EXPERIENCE = [
@@ -47,119 +87,50 @@ const EXPERIENCE = [
 
 /* ── PROJECTS ── */
 const VMS_IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
-    caption: "Visitor check-in dashboard — real-time visitor queue management and desk assignment flow.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&q=80",
-    caption: "Host notification system — automated alerts via email and SMS when visitors arrive.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80",
-    caption: "Admin panel — visitor logs, access control, and analytics built with TRPC + Prisma.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80",
-    caption: "Analytics view — visit trends, peak hours, and floor-level occupancy reporting.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80",
-    caption: "Mobile-responsive kiosk mode — self-service check-in for walk-in visitors.",
-  },
+  { src: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80", caption: "Visitor check-in dashboard — real-time visitor queue management and desk assignment flow." },
+  { src: "https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?w=800&q=80", caption: "Host notification system — automated alerts via email and SMS when visitors arrive." },
+  { src: "https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80", caption: "Admin panel — visitor logs, access control, and analytics built with TRPC + Prisma." },
+  { src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&q=80", caption: "Analytics view — visit trends, peak hours, and floor-level occupancy reporting." },
+  { src: "https://images.unsplash.com/photo-1504384308090-c894fdcc538d?w=800&q=80", caption: "Mobile-responsive kiosk mode — self-service check-in for walk-in visitors." },
 ];
 
 const AMOREBELLA_IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80",
-    caption: "Client intake module — managing funeral service requests and family information.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80",
-    caption: "Booking & scheduling system — calendar-driven service slot management for staff.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=800&q=80",
-    caption: "Mobile view — Flutter cross-platform UI accessible on Android and iOS devices.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80",
-    caption: "Records management — centralized archive of service history and client documents.",
-  },
+  { src: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&q=80", caption: "Client intake module — managing funeral service requests and family information." },
+  { src: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=800&q=80", caption: "Booking & scheduling system — calendar-driven service slot management for staff." },
+  { src: "https://images.unsplash.com/photo-1512314889357-e157c22f938d?w=800&q=80", caption: "Mobile view — Flutter cross-platform UI accessible on Android and iOS devices." },
+  { src: "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80", caption: "Records management — centralized archive of service history and client documents." },
 ];
 
 const ZHARM_IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80",
-    caption: "File dashboard — organized folder tree with quick access to recently uploaded files.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80",
-    caption: "Google Drive integration — seamlessly extending storage capacity through the Drive API.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80",
-    caption: "Upload & preview panel — drag-and-drop file uploading with instant inline preview.",
-  },
+  { src: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=800&q=80", caption: "File dashboard — organized folder tree with quick access to recently uploaded files." },
+  { src: "https://images.unsplash.com/photo-1518770660439-4636190af475?w=800&q=80", caption: "Google Drive integration — seamlessly extending storage capacity through the Drive API." },
+  { src: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&q=80", caption: "Upload & preview panel — drag-and-drop file uploading with instant inline preview." },
 ];
 
 const POS_IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80",
-    caption: "POS checkout screen — fast transaction processing with product search and cart management.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&q=80",
-    caption: "Inventory management — real-time stock tracking with low-stock alerts and restock logs.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80",
-    caption: "Sales reports — daily, weekly, and monthly transaction summaries with visual charts.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1573167243872-43c6433b9d40?w=800&q=80",
-    caption: "Barcode scanner integration — camera and hardware scanner support for quick product lookup.",
-  },
+  { src: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&q=80", caption: "POS checkout screen — fast transaction processing with product search and cart management." },
+  { src: "https://images.unsplash.com/photo-1553729459-efe14ef6055d?w=800&q=80", caption: "Inventory management — real-time stock tracking with low-stock alerts and restock logs." },
+  { src: "https://images.unsplash.com/photo-1600880292203-757bb62b4baf?w=800&q=80", caption: "Sales reports — daily, weekly, and monthly transaction summaries with visual charts." },
+  { src: "https://images.unsplash.com/photo-1573167243872-43c6433b9d40?w=800&q=80", caption: "Barcode scanner integration — camera and hardware scanner support for quick product lookup." },
 ];
 
 const SCATTER_IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80",
-    caption: "Virtual economy hub — the main interface where users manage their in-game currency and assets.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80",
-    caption: "Progression loop — earn, spend, and level up mechanics driving player engagement.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80",
-    caption: "Transaction ledger — full history of currency exchanges and economy events per user.",
-  },
+  { src: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&q=80", caption: "Virtual economy hub — the main interface where users manage their in-game currency and assets." },
+  { src: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&q=80", caption: "Progression loop — earn, spend, and level up mechanics driving player engagement." },
+  { src: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&q=80", caption: "Transaction ledger — full history of currency exchanges and economy events per user." },
 ];
 
 const MOTOPARTS_IMAGES = [
-  {
-    src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
-    caption: "Homepage — full landing page with featured motorcycle parts and promotional banners.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=800&q=80",
-    caption: "Product catalog — filterable parts listing with pricing, stock status, and descriptions.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&q=80",
-    caption: "Product detail page — individual part view with specs, images, and add-to-cart flow.",
-  },
-  {
-    src: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?w=800&q=80",
-    caption: "Admin panel — PHP-powered backend for managing inventory, orders, and customer records.",
-  },
+  { src: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80", caption: "Homepage — full landing page with featured motorcycle parts and promotional banners." },
+  { src: "https://images.unsplash.com/photo-1609630875171-b1321377ee65?w=800&q=80", caption: "Product catalog — filterable parts listing with pricing, stock status, and descriptions." },
+  { src: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&q=80", caption: "Product detail page — individual part view with specs, images, and add-to-cart flow." },
+  { src: "https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?w=800&q=80", caption: "Admin panel — PHP-powered backend for managing inventory, orders, and customer records." },
 ];
 
 const PROJECTS = [
   {
     id: "01", title: "KMC Visitor Management", subtitle: "T3 Stack · Enterprise App",
-    desc: "Developed and extended the core features of KMC Visitor Management System using T3 Stack (TypeScript, TailwindCSS, TRPC, and Next.js). Built robust visitor workflows, host notifications, and real-time dashboards.",
+    desc: "Extended the core features of KMC Visitor Management System using T3 Stack (TypeScript, TailwindCSS, TRPC, and Next.js). Built robust visitor workflows, host notifications, and real-time dashboards.",
     stack: ["TypeScript", "Next.js", "TRPC", "TailwindCSS", "Prisma"],
     icon: Users, accent: "#2dd4bf",
     link: "https://visitor-management.kmc.solutions/",
@@ -170,31 +141,35 @@ const PROJECTS = [
     id: "02", title: "Zharm Vault", subtitle: "Cloud File Management",
     desc: "A modern cloud-based platform to securely store, organize, and access files across devices. Integrates Google Drive API for extended capacity with a fast, structured interface.",
     stack: ["React (Vite)", "Supabase", "Google Drive API"],
-    icon: Box, accent: "#5eead4", link: "#", featured: true, images: ZHARM_IMAGES,
+    icon: Box, accent: "#5eead4",  featured: true, images: ZHARM_IMAGES,
+    link: "https://zharm-vault.vercel.app/",
   },
   {
     id: "03", title: "Inventory & POS", subtitle: "Management System",
     desc: "Scalable point-of-sale platform for retail ops. Real-time product management, order processing, and transaction tracking with camera-based barcode scanning and voice input.",
     stack: ["React", "Firebase", "Supabase", "JavaScript"],
-    icon: ShoppingCart, accent: "#34d399", link: "#", featured: true, images: POS_IMAGES,
+    icon: ShoppingCart, accent: "#34d399",  featured: true, images: POS_IMAGES,
+    link: "https://inah-store.vercel.app/",
   },
   {
     id: "04", title: "Scatter", subtitle: "Gamified Virtual Economy",
     desc: "A browser-based system simulating a virtual money system. Users earn, manage, and interact with in-game currency in a structured progression loop.",
     stack: ["JavaScript", "HTML", "CSS"],
-    icon: Gamepad2, accent: "#22d3ee", link: "#", featured: true, images: SCATTER_IMAGES,
+    icon: Gamepad2, accent: "#22d3ee", featured: true, images: SCATTER_IMAGES,
+    link: "https://mishrepo.vercel.app/",
   },
   {
     id: "05", title: "Portfolio Website", subtitle: "Personal Web Presence",
     desc: "Responsive personal website with smooth animations and a clean editorial design system built entirely in React.",
     stack: ["React", "Tailwind CSS", "Framer Motion"],
-    icon: Globe, accent: "#99f6e4", link: "#", featured: false, images: [],
+    icon: Globe, accent: "#99f6e4", featured: false, images: [],
   },
   {
     id: "06", title: "Amorebella Funeral Homes MIS", subtitle: "Thesis Project · Cross-platform App",
     desc: "Capstone thesis project — a full-featured Management Information System for Amorebella Funeral Homes. Handles client requests, service bookings, scheduling, and records management across web and mobile via Flutter and Firebase.",
     stack: ["Flutter", "Dart", "Firebase"],
-    icon: Folder, accent: "#2dd4bf", link: "#", featured: true, images: AMOREBELLA_IMAGES,
+    icon: Folder, accent: "#2dd4bf", featured: true, images: AMOREBELLA_IMAGES,
+      link: "https://amorebella.services/",
   },
   {
     id: "07", title: "Store POS System", subtitle: "School Project · Desktop App",
@@ -253,150 +228,476 @@ function ScrollBar() {
   );
 }
 
-/* ─────────────── IMAGE SLIDESHOW MODAL ─────── */
-function SlideshowModal({ project, onClose, T }) {
+/* ─────────────── INLINE PROJECT CAROUSEL ───── */
+function ProjectCard({ proj, T, dark }) {
   const [idx, setIdx] = useState(0);
-  const images = project.images;
+  const hasImages = proj.images && proj.images.length > 0;
+  const Icon = proj.icon;
 
-  useEffect(() => {
-    const onKey = (e) => {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowRight") setIdx(i => (i + 1) % images.length);
-      if (e.key === "ArrowLeft")  setIdx(i => (i - 1 + images.length) % images.length);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [images.length, onClose]);
+  const prev = useCallback((e) => {
+    e.stopPropagation();
+    setIdx(i => (i - 1 + proj.images.length) % proj.images.length);
+  }, [proj.images.length]);
+
+  const next = useCallback((e) => {
+    e.stopPropagation();
+    setIdx(i => (i + 1) % proj.images.length);
+  }, [proj.images.length]);
 
   return (
     <motion.div
-      initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-      onClick={onClose}
-      style={{ position: "fixed", inset: 0, zIndex: 300, background: "rgba(0,0,0,0.85)", backdropFilter: "blur(10px)", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}
+      initial={{ opacity: 0, y: 26 }} whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }} transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={{ y: -5, transition: { duration: 0.22 } }}
+      style={{
+        background: T.card, border: `1px solid ${T.border}`,
+        borderRadius: 18, overflow: "hidden",
+        display: "flex", flexDirection: "column",
+        position: "relative",
+        transition: "background 0.2s, border-color 0.2s, box-shadow 0.3s",
+      }}
+      onMouseEnter={e => {
+        e.currentTarget.style.background   = T.cardH;
+        e.currentTarget.style.borderColor  = `${proj.accent}50`;
+        e.currentTarget.style.boxShadow    = dark ? "0 16px 48px rgba(0,0,0,0.5)" : "0 16px 48px rgba(0,0,0,0.07)";
+      }}
+      onMouseLeave={e => {
+        e.currentTarget.style.background   = T.card;
+        e.currentTarget.style.borderColor  = T.border;
+        e.currentTarget.style.boxShadow    = "none";
+      }}
     >
-      <motion.div
-        initial={{ opacity: 0, scale: 0.88, y: 24 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
-        transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-        onClick={e => e.stopPropagation()}
-        style={{
-          background: T.bg2,
-          border: `1px solid ${T.border}`,
-          borderRadius: 20,
-          overflow: "hidden",
-          width: "100%",
-          maxWidth: 780,
-          boxShadow: "0 40px 100px rgba(0,0,0,0.6)",
-        }}
-      >
-        {/* Header */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "1rem 1.25rem", borderBottom: `1px solid ${T.border}` }}>
-          <div>
-            <h3 style={{ fontSize: "0.95rem", fontWeight: 800, color: T.text, letterSpacing: "-0.02em" }}>{project.title}</h3>
-            <p style={{ fontSize: "0.62rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>{project.subtitle}</p>
-          </div>
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-            <a href={project.link} target="_blank" rel="noreferrer" style={{
-              display: "inline-flex", alignItems: "center", gap: "0.3rem",
-              fontSize: "0.68rem", fontFamily: "'JetBrains Mono', monospace",
-              color: T.accL, border: `1px solid rgba(45,212,191,0.3)`,
-              borderRadius: 99, padding: "0.3rem 0.75rem", textDecoration: "none",
-              background: "rgba(45,212,191,0.08)", transition: "all 0.2s",
-            }}>
-              <ExternalLink size={10} /> Visit Site
-            </a>
-            <button onClick={onClose} style={{ background: "none", border: `1px solid ${T.border}`, borderRadius: "50%", width: 32, height: 32, cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", color: T.muted }}>
-              <X size={14} />
-            </button>
-          </div>
-        </div>
-
-        {/* Image */}
-        <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden", background: "#000" }}>
+      {/* ── CAROUSEL IMAGE ── */}
+      {hasImages ? (
+        <div style={{ position: "relative", aspectRatio: "16/9", overflow: "hidden", background: "#000", flexShrink: 0 }}>
           <AnimatePresence mode="wait">
             <motion.img
               key={idx}
-              src={images[idx].src}
-              alt={`Slide ${idx + 1}`}
-              initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }}
-              transition={{ duration: 0.35 }}
+              src={proj.images[idx].src}
+              alt={`${proj.title} screenshot ${idx + 1}`}
+              initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+              transition={{ duration: 0.28 }}
               style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
             />
           </AnimatePresence>
 
-          {images.length > 1 && (
+          {/* Gradient overlay at bottom for caption */}
+          <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, height: 72, background: "linear-gradient(to top, rgba(0,0,0,0.75), transparent)", pointerEvents: "none" }} />
+
+          {/* Caption */}
+          <AnimatePresence mode="wait">
+            <motion.p
+              key={idx}
+              initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+              transition={{ duration: 0.22 }}
+              style={{
+                position: "absolute", bottom: 8, left: 10, right: 10,
+                fontSize: "0.62rem", color: "rgba(255,255,255,0.85)", lineHeight: 1.4,
+                fontFamily: "'JetBrains Mono', monospace",
+                pointerEvents: "none",
+              }}
+            >
+              {proj.images[idx].caption}
+            </motion.p>
+          </AnimatePresence>
+
+          {/* Prev / Next arrows */}
+          {proj.images.length > 1 && (
             <>
-              <button onClick={() => setIdx(i => (i - 1 + images.length) % images.length)} style={{
-                position: "absolute", left: 10, top: "50%", transform: "translateY(-50%)",
-                width: 36, height: 36, borderRadius: "50%", border: `1px solid rgba(255,255,255,0.2)`,
-                background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)",
+              <button onClick={prev} style={{
+                position: "absolute", left: 8, top: "50%", transform: "translateY(-50%)",
+                width: 28, height: 28, borderRadius: "50%",
+                border: "1px solid rgba(255,255,255,0.25)", background: "rgba(0,0,0,0.5)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", color: "#fff", transition: "background 0.2s",
-              }}>
-                <ChevronLeft size={16} />
+                cursor: "pointer", color: "#fff", transition: "background 0.18s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.75)"}
+                onMouseLeave={e => e.currentTarget.style.background = "rgba(0,0,0,0.5)"}
+              >
+                <ChevronLeft size={13} />
               </button>
-              <button onClick={() => setIdx(i => (i + 1) % images.length)} style={{
-                position: "absolute", right: 10, top: "50%", transform: "translateY(-50%)",
-                width: 36, height: 36, borderRadius: "50%", border: `1px solid rgba(255,255,255,0.2)`,
-                background: "rgba(0,0,0,0.55)", backdropFilter: "blur(6px)",
+              <button onClick={next} style={{
+                position: "absolute", right: 8, top: "50%", transform: "translateY(-50%)",
+                width: 28, height: 28, borderRadius: "50%",
+                border: "1px solid rgba(255,255,255,0.25)", background: "rgba(0,0,0,0.5)",
                 display: "flex", alignItems: "center", justifyContent: "center",
-                cursor: "pointer", color: "#fff", transition: "background 0.2s",
-              }}>
-                <ChevronRight size={16} />
+                cursor: "pointer", color: "#fff", transition: "background 0.18s",
+              }}
+                onMouseEnter={e => e.currentTarget.style.background = "rgba(0,0,0,0.75)"}
+                onMouseLeave={e => e.currentTarget.style.background = "rgba(0,0,0,0.5)"}
+              >
+                <ChevronRight size={13} />
               </button>
             </>
           )}
 
-          <div style={{ position: "absolute", top: 10, right: 10, background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)", borderRadius: 99, padding: "0.2rem 0.65rem", fontSize: "0.6rem", fontFamily: "'JetBrains Mono', monospace", color: "#fff" }}>
-            {idx + 1} / {images.length}
+          {/* Counter + dot indicators */}
+          <div style={{
+            position: "absolute", top: 8, right: 8,
+            background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)",
+            borderRadius: 99, padding: "0.18rem 0.55rem",
+            fontSize: "0.58rem", fontFamily: "'JetBrains Mono', monospace", color: "#fff",
+          }}>
+            {idx + 1} / {proj.images.length}
           </div>
+
+          {/* Featured badge */}
+          {proj.featured && (
+            <div style={{
+              position: "absolute", top: 8, left: 8,
+              fontSize: "0.52rem", fontFamily: "'JetBrains Mono', monospace",
+              letterSpacing: "0.07em", textTransform: "uppercase",
+              color: proj.accent, border: `1px solid ${proj.accent}50`,
+              borderRadius: 99, padding: "0.12rem 0.5rem",
+              background: "rgba(0,0,0,0.6)", backdropFilter: "blur(6px)",
+            }}>
+              Featured
+            </div>
+          )}
+
+          {/* Dot strip */}
+          {proj.images.length > 1 && (
+            <div style={{ position: "absolute", bottom: 8, right: 10, display: "flex", gap: 4, alignItems: "center" }}>
+              {proj.images.map((_, i) => (
+                <button key={i} onClick={e => { e.stopPropagation(); setIdx(i); }} style={{
+                  width: i === idx ? 16 : 5, height: 5, borderRadius: 99,
+                  background: i === idx ? proj.accent : "rgba(255,255,255,0.4)",
+                  border: "none", cursor: "pointer", padding: 0,
+                  transition: "all 0.22s",
+                }} />
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+        /* Fallback placeholder when no images */
+        <div style={{
+          aspectRatio: "16/9", flexShrink: 0,
+          background: `${proj.accent}10`,
+          display: "flex", alignItems: "center", justifyContent: "center",
+          borderBottom: `1px solid ${T.border}`,
+        }}>
+          <Icon size={36} color={`${proj.accent}50`} />
+        </div>
+      )}
+
+      {/* ── CARD BODY ── */}
+      <div style={{ padding: "1.1rem 1.25rem", display: "flex", flexDirection: "column", gap: "0.7rem", flex: 1 }}>
+        {/* Header row */}
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", gap: "0.5rem" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "0.55rem" }}>
+            <div style={{
+              width: 34, height: 34, borderRadius: 9, flexShrink: 0,
+              background: `${proj.accent}16`, border: `1px solid ${proj.accent}30`,
+              display: "flex", alignItems: "center", justifyContent: "center",
+            }}>
+              <Icon size={15} color={proj.accent} />
+            </div>
+            <div>
+              <h3 style={{ fontSize: "0.95rem", fontWeight: 800, letterSpacing: "-0.02em", color: T.text, lineHeight: 1.2 }}>{proj.title}</h3>
+              <p style={{ fontSize: "0.62rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted, letterSpacing: "0.04em", marginTop: 2 }}>{proj.subtitle}</p>
+            </div>
+          </div>
+          <span style={{ fontSize: "0.55rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted, flexShrink: 0, marginTop: 2 }}>{proj.id}</span>
         </div>
 
-        {/* Caption */}
-        <div style={{ padding: "1rem 1.25rem", borderBottom: `1px solid ${T.border}` }}>
-          <AnimatePresence mode="wait">
-            <motion.p key={idx} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} transition={{ duration: 0.25 }}
-              style={{ fontSize: "0.8rem", color: T.sub, lineHeight: 1.65 }}>
-              {images[idx].caption}
-            </motion.p>
-          </AnimatePresence>
-        </div>
+        {/* Description — always visible, no truncation */}
+        <p style={{ fontSize: "0.82rem", color: T.sub, lineHeight: 1.68 }}>{proj.desc}</p>
 
-        {/* Dot indicators */}
-        <div style={{ padding: "0.85rem 1.25rem", display: "flex", gap: "0.4rem", alignItems: "center" }}>
-          {images.map((_, i) => (
-            <button key={i} onClick={() => setIdx(i)} style={{
-              width: i === idx ? 20 : 6, height: 6, borderRadius: 99,
-              background: i === idx ? T.accL : T.border,
-              border: "none", cursor: "pointer", padding: 0,
-              transition: "all 0.25s",
-            }} />
+        {/* Stack tags */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.28rem" }}>
+          {proj.stack.map(s => (
+            <span key={s} style={{
+              fontSize: "0.58rem", fontFamily: "'JetBrains Mono', monospace",
+              border: `1px solid ${T.border}`, color: T.muted,
+              padding: "0.16rem 0.48rem", borderRadius: 99,
+            }}>{s}</span>
           ))}
         </div>
-      </motion.div>
+
+        {/* Footer actions */}
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "flex-end", gap: "0.45rem", marginTop: "auto", paddingTop: "0.35rem", borderTop: `1px solid ${T.border}` }}>
+          <a
+            href={GITHUB_PROFILE}
+            target="_blank" rel="noreferrer"
+            title="View on GitHub"
+            style={{
+              display: "inline-flex", alignItems: "center", gap: "0.3rem",
+              fontSize: "0.62rem", fontFamily: "'JetBrains Mono', monospace",
+              color: T.muted, border: `1px solid ${T.border}`,
+              borderRadius: 99, padding: "0.28rem 0.65rem",
+              textDecoration: "none", background: "transparent",
+              transition: "all 0.18s",
+            }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderH; e.currentTarget.style.color = T.accL; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border;  e.currentTarget.style.color = T.muted; }}
+          >
+            <Github size={11} /> GitHub
+          </a>
+
+          {proj.link && proj.link !== "#" ? (
+            <a
+              href={proj.link} target="_blank" rel="noreferrer"
+              style={{
+                display: "inline-flex", alignItems: "center", gap: "0.3rem",
+                fontSize: "0.62rem", fontFamily: "'JetBrains Mono', monospace",
+                color: proj.accent, border: `1px solid ${proj.accent}45`,
+                borderRadius: 99, padding: "0.28rem 0.75rem",
+                textDecoration: "none", background: `${proj.accent}10`,
+                transition: "background 0.18s",
+              }}
+              onMouseEnter={e => e.currentTarget.style.background = `${proj.accent}22`}
+              onMouseLeave={e => e.currentTarget.style.background = `${proj.accent}10`}
+            >
+              <ExternalLink size={11} /> Live Site
+            </a>
+          ) : (
+            <span style={{
+              display: "inline-flex", alignItems: "center", gap: "0.3rem",
+              fontSize: "0.62rem", fontFamily: "'JetBrains Mono', monospace",
+              color: T.muted, border: `1px solid ${T.border}`,
+              borderRadius: 99, padding: "0.28rem 0.75rem",
+              background: "transparent", cursor: "default",
+            }}>
+              <ExternalLink size={11} /> Private
+            </span>
+          )}
+        </div>
+      </div>
     </motion.div>
+  );
+}
+
+/* ─────────────── GITHUB SECTION ────────────── */
+function GitHubSection({ T, dark }) {
+  return (
+    <section id="github" style={{ padding: "clamp(4rem,10vw,8rem) clamp(1rem,6vw,4.5rem)", borderTop: `1px solid ${T.border}` }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <motion.div variants={stagger} initial="hidden" whileInView="visible" viewport={{ once: true }} style={{ marginBottom: "2.5rem" }}>
+          <motion.p variants={fadeUp} style={{ fontSize: "0.65rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.14em", textTransform: "uppercase", color: T.accL, marginBottom: "0.75rem" }}>— Open Source</motion.p>
+          <motion.div variants={fadeUp} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
+            <h2 style={{ fontSize: "clamp(1.9rem,4.5vw,3.2rem)", fontWeight: 800, letterSpacing: "-0.04em", lineHeight: 1.05, color: T.text }}>
+              GitHub<span style={{ color: T.muted }}>.</span>
+            </h2>
+            <a href={GITHUB_PROFILE} target="_blank" rel="noreferrer" style={{
+              display: "inline-flex", alignItems: "center", gap: "0.4rem",
+              fontSize: "0.75rem", fontWeight: 700,
+              color: T.accL, border: `1px solid ${T.border}`,
+              borderRadius: 99, padding: "0.45rem 1.1rem",
+              textDecoration: "none", background: T.card,
+              transition: "all 0.2s",
+            }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderH; e.currentTarget.style.background = T.cardH; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = T.border;  e.currentTarget.style.background = T.card; }}
+            >
+              <Github size={14} /> @{GITHUB_USERNAME}
+            </a>
+          </motion.div>
+        </motion.div>
+
+        {/* Profile banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.6 }}
+          style={{
+            background: T.card, border: `1px solid ${T.border}`,
+            borderRadius: 18, padding: "1.5rem 1.75rem",
+            display: "flex", flexWrap: "wrap", gap: "1.5rem",
+            alignItems: "center", justifyContent: "space-between",
+            marginBottom: "1.5rem", position: "relative", overflow: "hidden",
+          }}
+        >
+          <div style={{ position: "absolute", top: 0, right: 0, width: 200, height: 200, background: `radial-gradient(circle at top right, rgba(45,212,191,0.08), transparent 70%)`, pointerEvents: "none" }} />
+
+          <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
+            <div style={{
+              width: 52, height: 52, borderRadius: "50%",
+              background: "linear-gradient(135deg, #0d9488, #2dd4bf)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "1.3rem", flexShrink: 0,
+              border: `2px solid rgba(45,212,191,0.35)`,
+            }}>
+              🐙
+            </div>
+            <div>
+              <div style={{ fontSize: "1rem", fontWeight: 800, letterSpacing: "-0.02em", color: T.text, marginBottom: 2 }}>Muhajir Payao</div>
+              <div style={{ fontSize: "0.68rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>@{GITHUB_USERNAME}</div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem" }}>
+            {[
+              { label: "Repositories", value: "16+" },
+              { label: "Contributions", value: "200+" },
+              { label: "Followers",     value: "12"   },
+            ].map(({ label, value }) => (
+              <div key={label} style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "1.35rem", fontWeight: 800, letterSpacing: "-0.04em", color: T.accL }}>{value}</div>
+                <div style={{ fontSize: "0.6rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted, textTransform: "uppercase", letterSpacing: "0.1em", marginTop: 2 }}>{label}</div>
+              </div>
+            ))}
+          </div>
+
+          <a href={GITHUB_PROFILE} target="_blank" rel="noreferrer" style={{
+            display: "inline-flex", alignItems: "center", gap: "0.4rem",
+            background: `linear-gradient(135deg, ${T.acc}, ${T.accL})`,
+            color: "#fff", borderRadius: 99, padding: "0.6rem 1.35rem",
+            fontSize: "0.75rem", fontWeight: 700, textDecoration: "none",
+            boxShadow: "0 4px 20px rgba(13,148,136,0.28)", transition: "opacity 0.2s",
+          }}
+            onMouseEnter={e => e.currentTarget.style.opacity = "0.85"}
+            onMouseLeave={e => e.currentTarget.style.opacity = "1"}
+          >
+            <Github size={13} /> View Profile
+          </a>
+        </motion.div>
+
+        {/* Contribution activity visual */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.1 }}
+          style={{
+            background: T.card, border: `1px solid ${T.border}`,
+            borderRadius: 18, padding: "1.5rem 1.75rem",
+            marginBottom: "1.5rem",
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "1rem" }}>
+            <p style={{ fontSize: "0.72rem", fontFamily: "'JetBrains Mono', monospace", color: T.sub, letterSpacing: "0.06em" }}>Contribution Activity · 2025–2026</p>
+            <span style={{ fontSize: "0.62rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>200+ contributions</span>
+          </div>
+          <ContributionGrid T={T} />
+          <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", marginTop: "0.75rem", justifyContent: "flex-end" }}>
+            <span style={{ fontSize: "0.58rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>Less</span>
+            {[0.1, 0.3, 0.55, 0.75, 1].map((op, i) => (
+              <div key={i} style={{ width: 10, height: 10, borderRadius: 3, background: `rgba(45,212,191,${op})` }} />
+            ))}
+            <span style={{ fontSize: "0.58rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>More</span>
+          </div>
+        </motion.div>
+
+        {/* Pinned repos */}
+        <div>
+          <p style={{ fontSize: "0.65rem", fontFamily: "'JetBrains Mono', monospace", letterSpacing: "0.12em", textTransform: "uppercase", color: T.muted, marginBottom: "0.85rem" }}>— Pinned Repositories</p>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(min(100%,280px),1fr))", gap: "0.85rem" }}>
+            {PINNED_REPOS.map((repo, i) => (
+              <motion.a
+                key={repo.name}
+                href={repo.url} target="_blank" rel="noreferrer"
+                initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.07, duration: 0.45 }}
+                whileHover={{ y: -4, transition: { duration: 0.18 } }}
+                style={{
+                  display: "flex", flexDirection: "column", gap: "0.7rem",
+                  background: T.card, border: `1px solid ${T.border}`,
+                  borderRadius: 14, padding: "1.1rem 1.25rem",
+                  textDecoration: "none", position: "relative", overflow: "hidden",
+                  transition: "background 0.2s, border-color 0.2s, box-shadow 0.25s",
+                }}
+                onMouseEnter={e => {
+                  e.currentTarget.style.background = T.cardH;
+                  e.currentTarget.style.borderColor = T.borderH;
+                  e.currentTarget.style.boxShadow = dark ? "0 10px 32px rgba(0,0,0,0.45)" : "0 10px 32px rgba(0,0,0,0.06)";
+                }}
+                onMouseLeave={e => {
+                  e.currentTarget.style.background = T.card;
+                  e.currentTarget.style.borderColor = T.border;
+                  e.currentTarget.style.boxShadow = "none";
+                }}
+              >
+                <div style={{ position: "absolute", top: 0, right: 0, width: 100, height: 80, background: "radial-gradient(circle at top right, rgba(45,212,191,0.07), transparent 70%)", pointerEvents: "none" }} />
+                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: "0.4rem" }}>
+                    <BookOpen size={13} color={T.accL} />
+                    <span style={{ fontSize: "0.82rem", fontWeight: 700, color: T.text, letterSpacing: "-0.01em" }}>{repo.name}</span>
+                  </div>
+                  <ArrowUpRight size={13} color={T.muted} />
+                </div>
+                <p style={{ fontSize: "0.76rem", color: T.sub, lineHeight: 1.6 }}>{repo.desc}</p>
+                <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginTop: "auto" }}>
+                  <span style={{ display: "flex", alignItems: "center", gap: "0.3rem", fontSize: "0.65rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>
+                    <div style={{ width: 10, height: 10, borderRadius: "50%", background: repo.langColor, flexShrink: 0 }} />
+                    {repo.lang}
+                  </span>
+                  <span style={{ display: "flex", alignItems: "center", gap: "0.28rem", fontSize: "0.65rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>
+                    <Star size={11} /> {repo.stars}
+                  </span>
+                  <span style={{ display: "flex", alignItems: "center", gap: "0.28rem", fontSize: "0.65rem", fontFamily: "'JetBrains Mono', monospace", color: T.muted }}>
+                    <GitFork size={11} /> {repo.forks}
+                  </span>
+                </div>
+              </motion.a>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+/* ─────────────── CONTRIBUTION GRID ─────────── */
+function ContributionGrid({ T }) {
+  const weeks   = 26;
+  const days    = 7;
+  const cellSz  = 11;
+  const gap     = 3;
+
+  // Generate pseudo-random but consistent contribution data
+  const grid = Array.from({ length: weeks }, (_, w) =>
+    Array.from({ length: days }, (_, d) => {
+      const seed = (w * 7 + d + 13) * 37;
+      const rand = ((seed % 97) / 97);
+      if (rand < 0.35) return 0;
+      if (rand < 0.6)  return 1;
+      if (rand < 0.78) return 2;
+      if (rand < 0.9)  return 3;
+      return 4;
+    })
+  );
+
+  const opacities = [0, 0.15, 0.38, 0.65, 1];
+
+  return (
+    <div style={{ overflowX: "auto", paddingBottom: 4 }}>
+      <div style={{ display: "flex", gap: gap }}>
+        {grid.map((week, w) => (
+          <div key={w} style={{ display: "flex", flexDirection: "column", gap: gap }}>
+            {week.map((level, d) => (
+              <div
+                key={d}
+                title={`${level} contribution${level !== 1 ? "s" : ""}`}
+                style={{
+                  width: cellSz, height: cellSz, borderRadius: 3,
+                  background: level === 0
+                    ? T.border
+                    : `rgba(45,212,191,${opacities[level]})`,
+                  transition: "transform 0.15s",
+                  cursor: "default",
+                }}
+                onMouseEnter={e => e.currentTarget.style.transform = "scale(1.4)"}
+                onMouseLeave={e => e.currentTarget.style.transform = "scale(1)"}
+              />
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }
 
 /* ─────────────── MAIN ───────────────────────── */
 export default function Home() {
-  const [dark,         setDark]         = useState(true);
-  const [drawerOpen,   setDrawerOpen]   = useState(false);
-  const [scrolled,     setScrolled]     = useState(false);
-  const [active,       setActive]       = useState("home");
-  const [filter,       setFilter]       = useState("all");
-  const [slideProject, setSlideProject] = useState(null);
-  const [isMobile,     setIsMobile]     = useState(() => window.innerWidth < 640);
-  const [expandedDescs, setExpandedDescs] = useState({});
-
-  const toggleDesc = (id, e) => {
-    e.stopPropagation();
-    setExpandedDescs(prev => ({ ...prev, [id]: !prev[id] }));
-  };
+  const [dark,       setDark]       = useState(true);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [scrolled,   setScrolled]   = useState(false);
+  const [active,     setActive]     = useState("home");
+  const [filter,     setFilter]     = useState("all");
+  const [isMobile,   setIsMobile]   = useState(() => window.innerWidth < 640);
 
   useEffect(() => {
     const onScroll = () => {
       setScrolled(window.scrollY > 40);
-      const ids = ["home","about","experience","projects","skills","contact"];
+      const ids = ["home","about","experience","projects","skills","github","contact"];
       for (const id of [...ids].reverse()) {
         const el = document.getElementById(id);
         if (el && window.scrollY >= el.offsetTop - 130) { setActive(id); break; }
@@ -414,11 +715,6 @@ export default function Home() {
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
-
-  useEffect(() => {
-    document.body.style.overflow = slideProject ? "hidden" : "";
-    return () => { document.body.style.overflow = ""; };
-  }, [slideProject]);
 
   const T = {
     bg:      dark ? "#030a0a"                       : "#f0fafa",
@@ -460,14 +756,6 @@ export default function Home() {
       background-clip: text;
       animation: shimmer 3s linear infinite;
     }
-    .desc-clickable {
-      cursor: pointer;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
-    .desc-clickable:active p {
-      opacity: 0.7;
-    }
   `;
 
   const sectionLabel = { fontSize:"0.65rem", fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.14em", textTransform:"uppercase", color: T.accL, marginBottom:"0.75rem" };
@@ -477,13 +765,6 @@ export default function Home() {
     <div style={{ background:T.bg, color:T.text, fontFamily:"'Plus Jakarta Sans', sans-serif", transition:"background 0.35s, color 0.35s", overflowX:"hidden", minHeight:"100svh" }}>
       <style>{css}</style>
       <ScrollBar />
-
-      {/* ── SLIDESHOW MODAL ── */}
-      <AnimatePresence>
-        {slideProject && (
-          <SlideshowModal project={slideProject} onClose={() => setSlideProject(null)} T={T} />
-        )}
-      </AnimatePresence>
 
       {/* ── DRAWER OVERLAY ── */}
       <AnimatePresence>
@@ -511,7 +792,6 @@ export default function Home() {
               backdropFilter:"blur(24px)",
               borderRight:`1px solid ${T.border}`,
               display:"flex", flexDirection:"column",
-              padding:"0",
               overflowY:"auto",
             }}
           >
@@ -546,9 +826,21 @@ export default function Home() {
               })}
             </nav>
             <div style={{ padding:"1rem 1.25rem", borderTop:`1px solid ${T.border}` }}>
+              {/* Resume download in drawer */}
+              <a href={RESUME_URL} download="Muhajir_Payao_Resume.pdf" style={{
+                display:"flex", alignItems:"center", justifyContent:"center", gap:"0.4rem",
+                width:"100%", padding:"0.6rem",
+                background:`linear-gradient(135deg, ${T.acc}, ${T.accL})`,
+                color:"#fff", borderRadius:10,
+                fontSize:"0.72rem", fontWeight:700, textDecoration:"none",
+                marginBottom:"0.75rem",
+                boxShadow:"0 3px 14px rgba(13,148,136,0.28)",
+              }}>
+                <Download size={12} /> Download Resume
+              </a>
               <div style={{ display:"flex", gap:"0.5rem", marginBottom:"0.75rem" }}>
                 {[
-                  { icon: Github,   href:"https://github.com/" },
+                  { icon: Github,   href: GITHUB_PROFILE },
                   { icon: Facebook, href:"https://www.facebook.com/muhajir.payao/" },
                   { icon: Mail,     href:"mailto:mhjrpy@gmail.com" },
                 ].map(({ icon:Icon, href }, i) => (
@@ -611,6 +903,21 @@ export default function Home() {
         </nav>
 
         <div style={{ display:"flex", gap:"0.5rem", alignItems:"center" }}>
+          {/* Resume button in navbar */}
+          <a href={RESUME_URL} download="Muhajir_Payao_Resume.pdf" style={{
+            display:"inline-flex", alignItems:"center", gap:"0.3rem",
+            fontSize:"0.65rem", fontWeight:700, letterSpacing:"0.04em",
+            color: T.accL, border:`1px solid ${T.border}`,
+            borderRadius:99, padding:"0.32rem 0.85rem",
+            textDecoration:"none", background:T.card, transition:"all 0.2s",
+            whiteSpace:"nowrap",
+          }}
+            onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderH; e.currentTarget.style.background = T.cardH; }}
+            onMouseLeave={e => { e.currentTarget.style.borderColor = T.border;  e.currentTarget.style.background = T.card; }}
+          >
+            <Download size={11} /> Resume
+          </a>
+
           <button onClick={() => setDark(!dark)} style={{
             width:36, height:36, borderRadius:"50%", border:`1px solid ${T.border}`,
             background:T.card, display:"flex", alignItems:"center", justifyContent:"center",
@@ -697,6 +1004,32 @@ export default function Home() {
               >
                 View Projects <ArrowUpRight size={14}/>
               </a>
+
+              {/* Resume download in hero */}
+              <a href={RESUME_URL} download="Muhajir_Payao_Resume.pdf" style={{
+                display:"inline-flex", alignItems:"center", gap:"0.4rem",
+                border:`1px solid ${T.border}`, color:T.sub, borderRadius:99,
+                padding:"0.68rem 1.6rem", fontSize:"0.8rem", fontWeight:600,
+                textDecoration:"none", background:"transparent", transition:"all 0.2s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderH; e.currentTarget.style.color = T.accL; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = T.border;  e.currentTarget.style.color = T.sub;  }}
+              >
+                <Download size={14}/> Download CV
+              </a>
+
+              <a href={GITHUB_PROFILE} target="_blank" rel="noreferrer" style={{
+                display:"inline-flex", alignItems:"center", gap:"0.4rem",
+                border:`1px solid ${T.border}`, color:T.sub, borderRadius:99,
+                padding:"0.68rem 1.1rem", fontSize:"0.8rem", fontWeight:600,
+                textDecoration:"none", background:"transparent", transition:"all 0.2s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderH; e.currentTarget.style.color = T.accL; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = T.border;  e.currentTarget.style.color = T.sub;  }}
+              >
+                <Github size={14}/>
+              </a>
+
               <a href="#contact" style={{
                 display:"inline-flex", alignItems:"center", gap:"0.4rem",
                 border:`1px solid ${T.border}`, color:T.sub, borderRadius:99,
@@ -887,7 +1220,7 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════
-          PROJECTS
+          PROJECTS  (inline carousel cards)
       ══════════════════════════════════════════ */}
       <section id="projects" style={{ padding:"clamp(4rem,10vw,8rem) clamp(1rem,6vw,4.5rem)", borderTop:`1px solid ${T.border}` }}>
         <div style={{ maxWidth:1200, margin:"0 auto" }}>
@@ -916,121 +1249,11 @@ export default function Home() {
           <AnimatePresence mode="wait">
             <motion.div key={filter}
               initial={{ opacity:0 }} animate={{ opacity:1 }} exit={{ opacity:0 }}
-              style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(100%,310px),1fr))", gap:"1rem" }}
+              style={{ display:"grid", gridTemplateColumns:"repeat(auto-fill, minmax(min(100%,320px),1fr))", gap:"1.1rem" }}
             >
-              {filtered.map((proj,i) => {
-                const Icon = proj.icon;
-                const hasSlideshow = proj.images && proj.images.length > 0;
-                const isExpanded = expandedDescs[proj.id];
-                return (
-                  <motion.div key={proj.id}
-                    initial={{ opacity:0, y:26 }} whileInView={{ opacity:1, y:0 }}
-                    viewport={{ once:true }} transition={{ delay:i*0.06, duration:0.55, ease:[0.22,1,0.36,1] }}
-                    whileHover={{ y:-5, transition:{ duration:0.22 } }}
-                    style={{
-                      background:T.card, border:`1px solid ${T.border}`,
-                      borderRadius:18, padding:"1.4rem",
-                      display:"flex", flexDirection:"column", gap:"1rem",
-                      position:"relative", overflow:"hidden",
-                      transition:"background 0.2s, border-color 0.2s, box-shadow 0.3s",
-                    }}
-                    onMouseEnter={e => {
-                      e.currentTarget.style.background   = T.cardH;
-                      e.currentTarget.style.borderColor  = `${proj.accent}50`;
-                      e.currentTarget.style.boxShadow    = dark ? "0 16px 48px rgba(0,0,0,0.5)" : "0 16px 48px rgba(0,0,0,0.07)";
-                    }}
-                    onMouseLeave={e => {
-                      e.currentTarget.style.background   = T.card;
-                      e.currentTarget.style.borderColor  = T.border;
-                      e.currentTarget.style.boxShadow    = "none";
-                    }}
-                  >
-                    <div style={{ position:"absolute", top:0, right:0, width:120, height:120, background:`radial-gradient(circle at top right, ${proj.accent}18, transparent 70%)`, pointerEvents:"none" }} />
-
-                    <div style={{ display:"flex", alignItems:"flex-start", justifyContent:"space-between" }}>
-                      <div style={{ width:40, height:40, borderRadius:10, background:`${proj.accent}16`, border:`1px solid ${proj.accent}30`, display:"flex", alignItems:"center", justifyContent:"center" }}>
-                        <Icon size={17} color={proj.accent}/>
-                      </div>
-                      <div style={{ display:"flex", alignItems:"center", gap:"0.4rem" }}>
-                        <span style={{ fontSize:"0.58rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted }}>{proj.id}</span>
-                        {proj.featured && (
-                          <span style={{ fontSize:"0.52rem", fontFamily:"'JetBrains Mono', monospace", letterSpacing:"0.07em", textTransform:"uppercase", color:proj.accent, border:`1px solid ${proj.accent}35`, borderRadius:99, padding:"0.1rem 0.42rem" }}>
-                            Featured
-                          </span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div>
-                      <h3 style={{ fontSize:"0.98rem", fontWeight:800, letterSpacing:"-0.02em", marginBottom:"0.18rem", color:T.text }}>{proj.title}</h3>
-                      <p style={{ fontSize:"0.65rem", fontFamily:"'JetBrains Mono', monospace", color:T.muted, letterSpacing:"0.05em", marginBottom:"0.6rem" }}>{proj.subtitle}</p>
-
-                      {/* ── CLICKABLE DESCRIPTION — tap anywhere on text to expand/collapse ── */}
-                      <div
-                        className="desc-clickable"
-                        onClick={(e) => toggleDesc(proj.id, e)}
-                        style={{ position: "relative" }}
-                      >
-                        <p style={{
-                          fontSize:"0.82rem", color:T.sub, lineHeight:1.65,
-                          display: isExpanded ? "block" : "-webkit-box",
-                          WebkitLineClamp: isExpanded ? "unset" : 3,
-                          WebkitBoxOrient: "vertical",
-                          overflow: "hidden",
-                          transition: "all 0.25s ease",
-                        }}>
-                          {proj.desc}
-                        </p>
-                        {!isExpanded && (
-                          <div style={{
-                            position:"absolute", bottom:0, left:0, right:0, height:24,
-                            background: dark
-                              ? "linear-gradient(to bottom, transparent, #030a0a)"
-                              : "linear-gradient(to bottom, transparent, #f0fafa)",
-                            pointerEvents:"none",
-                          }} />
-                        )}
-                      </div>
-                    </div>
-
-                    <div style={{ display:"flex", alignItems:"center", justifyContent:"space-between", flexWrap:"wrap", gap:"0.4rem", marginTop:"auto" }}>
-                      <div style={{ display:"flex", flexWrap:"wrap", gap:"0.28rem" }}>
-                        {proj.stack.map(s => (
-                          <span key={s} style={{ fontSize:"0.58rem", fontFamily:"'JetBrains Mono', monospace", border:`1px solid ${T.border}`, color:T.muted, padding:"0.16rem 0.48rem", borderRadius:99 }}>{s}</span>
-                        ))}
-                      </div>
-
-                      <div style={{ display:"flex", gap:"0.3rem", flexShrink:0 }}>
-                        {hasSlideshow && (
-                          <button onClick={() => setSlideProject(proj)} style={{
-                            height:28, padding:"0 0.55rem", borderRadius:99,
-                            border:`1px solid ${proj.accent}40`, background:`${proj.accent}12`,
-                            display:"flex", alignItems:"center", justifyContent:"center", gap:"0.25rem",
-                            color:proj.accent, cursor:"pointer", transition:"background 0.2s", flexShrink:0,
-                            fontSize:"0.58rem", fontFamily:"'JetBrains Mono', monospace",
-                          }}
-                            onMouseEnter={e => e.currentTarget.style.background = `${proj.accent}28`}
-                            onMouseLeave={e => e.currentTarget.style.background = `${proj.accent}12`}
-                          >
-                            <span style={{ fontSize:"0.6rem" }}>🖼</span> Gallery
-                          </button>
-                        )}
-                        <a href={proj.link} target={proj.link !== "#" ? "_blank" : undefined} rel="noreferrer" style={{
-                          width:28, height:28, borderRadius:"50%",
-                          border:`1px solid ${proj.accent}40`, background:`${proj.accent}12`,
-                          display:"flex", alignItems:"center", justifyContent:"center",
-                          color:proj.accent, textDecoration:"none", transition:"background 0.2s", flexShrink:0,
-                        }}
-                          onMouseEnter={e => e.currentTarget.style.background = `${proj.accent}28`}
-                          onMouseLeave={e => e.currentTarget.style.background = `${proj.accent}12`}
-                        >
-                          <ArrowUpRight size={12}/>
-                        </a>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+              {filtered.map(proj => (
+                <ProjectCard key={proj.id} proj={proj} T={T} dark={dark} />
+              ))}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -1081,6 +1304,11 @@ export default function Home() {
       </section>
 
       {/* ══════════════════════════════════════════
+          GITHUB
+      ══════════════════════════════════════════ */}
+      <GitHubSection T={T} dark={dark} />
+
+      {/* ══════════════════════════════════════════
           CONTACT
       ══════════════════════════════════════════ */}
       <section id="contact" style={{ padding:"clamp(4rem,10vw,8rem) clamp(1rem,6vw,4.5rem)", borderTop:`1px solid ${T.border}` }}>
@@ -1120,6 +1348,17 @@ export default function Home() {
               >
                 <Mail size={14}/> Send Email
               </a>
+              <a href={RESUME_URL} download="Muhajir_Payao_Resume.pdf" style={{
+                display:"inline-flex", alignItems:"center", gap:"0.45rem",
+                border:`1px solid ${T.border}`, color:T.sub, borderRadius:99,
+                padding:"0.65rem 1.6rem", fontSize:"0.8rem", fontWeight:600,
+                textDecoration:"none", background:"transparent", transition:"all 0.2s",
+              }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = T.borderH; e.currentTarget.style.color = T.accL; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = T.border;  e.currentTarget.style.color = T.sub; }}
+              >
+                <Download size={14}/> Resume
+              </a>
               <a href="https://www.facebook.com/muhajir.payao/" target="_blank" rel="noreferrer" style={{
                 display:"inline-flex", alignItems:"center", gap:"0.45rem",
                 border:`1px solid ${T.border}`, color:T.sub, borderRadius:99,
@@ -1156,9 +1395,9 @@ export default function Home() {
           <div style={{ display:"flex", gap:"0.45rem" }}>
             {[
               { icon:Mail,     href:"mailto:mhjrpy@gmail.com" },
-              { icon:Github,   href:"https://github.com/"                       },
-              { icon:Facebook, href:"https://www.facebook.com/muhajir.payao/"   },
-              { icon:Twitter,  href:"https://twitter.com"                       },
+              { icon:Github,   href: GITHUB_PROFILE           },
+              { icon:Facebook, href:"https://www.facebook.com/muhajir.payao/" },
+              { icon:Twitter,  href:"https://twitter.com"     },
             ].map(({ icon:Icon, href },i) => (
               <a key={i} href={href} target="_blank" rel="noreferrer" style={{
                 width:30, height:30, borderRadius:"50%", border:`1px solid ${T.border}`,
